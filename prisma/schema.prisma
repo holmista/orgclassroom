@@ -10,8 +10,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum NoteType {
+  TEXT
+  IMAGE
+  VIDEO
+  AUDIO
+  FILE
+}
+
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String
+  id       Int        @id @default(autoincrement())
+  email    String     @unique
+  name     String
+  authProvider String
+  authProviderId String
+  Subject Subject[]
+}
+
+model Subject {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  startTime DateTime
+  endTime   DateTime
+  title     String
+  Note     Note[]
+}
+
+model Note{
+  id           Int         @id @default(autoincrement())
+  subject      Subject     @relation(fields: [subjectId], references: [id])
+  subjectId    Int
+  title        String?
+  type         NoteType
+  content      String      @db.VarChar(500)
 }
