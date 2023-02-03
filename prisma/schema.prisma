@@ -10,6 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum NoteType {
+  TEXT
+  IMAGE
+  VIDEO
+  AUDIO
+  FILE
+}
+
 model User {
   id       Int        @id @default(autoincrement())
   email    String     @unique
@@ -34,5 +42,6 @@ model Note{
   subject      Subject     @relation(fields: [subjectId], references: [id])
   subjectId    Int
   title     String?
+  type     NoteType
   content   String
 }
