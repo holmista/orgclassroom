@@ -1,7 +1,6 @@
-import { google } from "googleapis";
 import dotenv from "dotenv";
 dotenv.config();
-import querystring from "querystring";
+import querystring from "query-string";
 import axios from "axios";
 
 interface ITokens {
