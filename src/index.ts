@@ -1,7 +1,8 @@
 import express, { Request } from "express";
 import dotenv from "dotenv";
 dotenv.config();
-import { User } from "@prisma/client";
+import authRouter from "./routes/auth.js";
+import setGoogleAuthURL from "./configs/googleAuth.js";
 
 declare global {
   namespace Express {
@@ -12,11 +13,13 @@ declare global {
 }
 
 const app = express();
+setGoogleAuthURL();
 
 app.get("/", (req: Request, res) => {
   res.end("Hello World");
-  req.user;
 });
+
+app.use("/", authRouter);
 
 app.listen(3000, () => {
   console.log("listening on port " + process.env.PORT);
