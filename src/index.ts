@@ -15,6 +15,8 @@ declare global {
 const app = express();
 setGoogleAuthURL();
 
+app.use(express.json());
+
 app.get("/", (req: Request, res) => {
   res.end("Hello World");
 });
