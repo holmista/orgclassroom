@@ -83,9 +83,5 @@ const githubClient = new GithubClient(
   process.env.GITHUB_REDIRECT_URL,
   "read:user user:email"
 );
-console.log(
-  githubClient
-    .getUser("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")
-    .then((res) => console.log(res))
-);
+
 export default githubClient;
