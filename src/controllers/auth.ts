@@ -62,17 +62,7 @@ async function loginWithGoogle(req: express.Request, res: express.Response) {
     if (!code) return res.status(400).json({ message: "No code provided" });
     const googleAuth = new GoogleAuth(code);
     const token = await googleAuth.login();
-    res
-      .status(200)
-      .cookie("token", token, {
-        domain: process.env.FRONT_TOP_LEVEL_DOMAIN,
-        path: "/",
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        maxAge: process.env.SESSION_EXPIRES_IN as unknown as number,
-      })
-      .end();
+    res.status(200).cookie("token", token, Auth.cookieOptions).end();
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -82,22 +72,23 @@ async function loginWithGithub(req: express.Request, res: express.Response) {
   try {
     const code = req.body.code;
     if (!code) return res.status(400).json({ message: "No code provided" });
-    const googleAuth = new GoogleAuth(code);
-    const token = await googleAuth.login();
-    res
-      .status(200)
-      .cookie("token", token, {
-        domain: process.env.FRONT_TOP_LEVEL_DOMAIN,
-        path: "/",
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        maxAge: process.env.SESSION_EXPIRES_IN as unknown as number,
-      })
-      .end();
+    const githubAuth = new GithubAuth(code);
+    const token = await githubAuth.login();
+    res.status(200).cookie("token", token, Auth.cookieOptions).end();
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 }
 
-export { loginWithGithub, loginWithGoogle };
+async function logout(req: express.Request, res: express.Response) {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(400).json({ message: "No token provided" });
+    await Auth.logout(token);
+    res.status(200).clearCookie("token", Auth.cookieOptions).end();
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}
+
+export { loginWithGithub, loginWithGoogle, logout };

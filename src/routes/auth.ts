@@ -1,7 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
-import { loginWithGithub, loginWithGoogle } from "../controllers/auth.js";
+import {
+  loginWithGithub,
+  loginWithGoogle,
+  logout,
+} from "../controllers/auth.js";
 
 const router = express.Router();
 
@@ -19,6 +23,10 @@ router.post("/auth/login/google", (req, res) => {
 
 router.post("/auth/login/github", (req, res) => {
   loginWithGithub(req, res);
+});
+
+router.get("/auth/logout", (req, res) => {
+  logout(req, res);
 });
 
 export default router;
