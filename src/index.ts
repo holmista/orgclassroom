@@ -5,7 +5,7 @@ import authRouter from "./routes/auth.js";
 import setGoogleAuthURL from "./configs/googleAuth.js";
 import setGithubAuthURL from "./configs/githubAuth.js";
 import { User } from "@prisma/client";
-import crypto from "node:crypto";
+import cookieParser from "cookie-parser";
 
 declare global {
   namespace Express {
@@ -21,6 +21,7 @@ setGithubAuthURL();
 console.log(process.env.GITHUB_LOGIN_URL);
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/", (req: Request, res) => {
   res.end("Hello World");
