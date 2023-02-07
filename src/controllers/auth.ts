@@ -91,4 +91,4 @@ async function logout(req: express.Request, res: express.Response) {
   }
 }
 
-export { loginWithGithub, loginWithGoogle, logout };
+export { GoogleAuth, GithubAuth, loginWithGithub, loginWithGoogle, logout };

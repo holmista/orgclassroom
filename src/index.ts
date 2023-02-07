@@ -32,3 +32,5 @@ app.use("/", authRouter);
 app.listen(3000, () => {
   console.log("listening on port " + process.env.PORT);
 });
+
+export default app;
