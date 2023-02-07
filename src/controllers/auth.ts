@@ -2,10 +2,12 @@ import express from "express";
 import Auth from "../../lib/auth.js";
 import googleClient from "../configs/googleClient.js";
 import githubClient from "../configs/githubClient.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 class GoogleAuth extends Auth {
-  constructor(res: express.Response, code: string) {
-    super(res, code);
+  constructor(code: string) {
+    super(code);
   }
   async login() {
     try {
@@ -23,16 +25,16 @@ class GoogleAuth extends Auth {
         authProviderId: userData.id,
       });
       const sessionToken = await super.createSession(user);
-      super.sendAuthCookie(sessionToken);
+      return sessionToken;
     } catch (err) {
-      this.res.status(400).json({ message: err.message });
+      throw new Error(err.message);
     }
   }
 }
 
 class GithubAuth extends Auth {
-  constructor(res: express.Response, code: string) {
-    super(res, code);
+  constructor(code: string) {
+    super(code);
   }
   async login() {
     try {
@@ -47,11 +49,55 @@ class GithubAuth extends Auth {
         authProviderId: String(userData.id),
       });
       const sessionToken = await super.createSession(user);
-      super.sendAuthCookie(sessionToken);
+      return sessionToken;
     } catch (err) {
-      this.res.status(400).json({ message: err.message });
+      throw new Error(err.message);
     }
   }
 }
 
-export { GoogleAuth, GithubAuth };
+async function loginWithGoogle(req: express.Request, res: express.Response) {
+  try {
+    const code = req.body.code;
+    if (!code) return res.status(400).json({ message: "No code provided" });
+    const googleAuth = new GoogleAuth(code);
+    const token = await googleAuth.login();
+    res
+      .status(200)
+      .cookie("token", token, {
+        domain: process.env.FRONT_TOP_LEVEL_DOMAIN,
+        path: "/",
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: process.env.SESSION_EXPIRES_IN as unknown as number,
+      })
+      .end();
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}
+
+async function loginWithGithub(req: express.Request, res: express.Response) {
+  try {
+    const code = req.body.code;
+    if (!code) return res.status(400).json({ message: "No code provided" });
+    const googleAuth = new GoogleAuth(code);
+    const token = await googleAuth.login();
+    res
+      .status(200)
+      .cookie("token", token, {
+        domain: process.env.FRONT_TOP_LEVEL_DOMAIN,
+        path: "/",
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: process.env.SESSION_EXPIRES_IN as unknown as number,
+      })
+      .end();
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}
+
+export { loginWithGithub, loginWithGoogle };

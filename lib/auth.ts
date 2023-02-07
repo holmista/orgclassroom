@@ -1,4 +1,3 @@
-import express from "express";
 import { User } from "@prisma/client";
 import db from "./database.js";
 import Session from "./session.js";
@@ -6,13 +5,11 @@ import Session from "./session.js";
 type createUser = Omit<User, "id">;
 
 abstract class Auth {
-  res: express.Response;
   code: string;
-  constructor(res: express.Response, code: string) {
-    this.res = res;
+  constructor(code: string) {
     this.code = code;
   }
-  abstract login(): Promise<void>;
+  abstract login(): Promise<string>;
 
   async createUser(user: createUser) {
     try {
@@ -48,20 +45,6 @@ abstract class Auth {
     } catch (err) {
       throw new Error(err.message);
     }
-  }
-
-  async sendAuthCookie(token: string) {
-    this.res
-      .status(200)
-      .cookie("token", token, {
-        domain: process.env.FRONT_TOP_LEVEL_DOMAIN,
-        path: "/",
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        maxAge: process.env.SESSION_EXPIRES_IN as unknown as number,
-      })
-      .end();
   }
 }
 
