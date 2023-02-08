@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import queryString from "query-string";
 
-async function getGoogleCode() {
+async function getGoogleCode(): Promise<string> {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   await page.goto(
@@ -25,15 +25,15 @@ async function getGoogleCode() {
   await page.waitForSelector(passwordInputSelector);
   await page.$eval(passwordInputSelector, (el) => (el.value = "katon123456"));
   const elem = await page.waitForSelector(
-    "#forgotPassword > div > button > span"
+    "#passwordNext > div > button > div.VfPpkd-Jh9lGc"
   );
-  console.log("elem");
-  await elem.evaluate((b) => b.click());
+  page.evaluate((btn) => {
+    btn.click();
+  }, elem);
   await page.waitForNavigation();
   const url = page.url();
   const parsedUrl = queryString.parseUrl(url);
-  //   await browser.close();
-  return parsedUrl.query.code;
+  browser.close();
+  return parsedUrl.query.code as string;
 }
-getGoogleCode().then((code) => console.log(code));
 export default getGoogleCode;
