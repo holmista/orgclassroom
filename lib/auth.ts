@@ -24,8 +24,7 @@ abstract class Auth {
     try {
       const userData = await db.user.findFirst({
         where: {
-          authProviderId: user.authProviderId,
-          authProvider: user.authProvider,
+          email: user.email,
         },
       });
       if (!userData) {
@@ -63,7 +62,7 @@ abstract class Auth {
       });
       return session;
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error("invalid token");
     }
   }
 }
