@@ -8,7 +8,7 @@
     "build": "tsc",
     "dev": "nodemon --exec ts-node-esm src/index.ts",
     "seed": "npx ts-node-esm prisma/seed.ts",
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --verbose --runInBand"
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand"
   },
   "keywords": [],
   "author": "",
@@ -29,6 +29,7 @@
     "@types/supertest": "^2.0.12",
     "nodemon": "^2.0.20",
     "prisma": "^4.9.0",
+    "puppeteer": "^19.6.3",
     "supertest": "^6.3.3",
     "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",

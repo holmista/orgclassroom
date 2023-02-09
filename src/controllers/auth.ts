@@ -83,7 +83,7 @@ async function loginWithGithub(req: express.Request, res: express.Response) {
 async function logout(req: express.Request, res: express.Response) {
   try {
     const token = req.cookies.token;
-    if (!token) return res.status(400).json({ message: "No token provided" });
+    if (!token) return res.status(401).json({ message: "No token provided" });
     await Auth.logout(token);
     res.status(200).clearCookie("token", Auth.cookieOptions).end();
   } catch (err) {
