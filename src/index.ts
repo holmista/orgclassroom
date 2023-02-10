@@ -7,6 +7,7 @@ import setGoogleAuthURL from "./configs/googleAuth.js";
 import setGithubAuthURL from "./configs/githubAuth.js";
 import { User } from "@prisma/client";
 import cookieParser from "cookie-parser";
+import authenticate from "./middlewares/authenticate.js";
 
 declare global {
   namespace Express {
@@ -26,7 +27,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/auth", authRouter);
-app.use("/subjects", subjectRouter);
+app.use("/subjects", authenticate, subjectRouter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.log(err);
