@@ -9,23 +9,23 @@ import {
 
 const router = express.Router();
 
-router.get("/auth/url/google", (_, res) => {
+router.get("/url/google", (_, res) => {
   res.status(200).json({ url: process.env.GOOGLE_LOGIN_URL });
 });
 
-router.get("/auth/url/github", (_, res) => {
+router.get("/url/github", (_, res) => {
   res.status(200).json({ url: process.env.GITHUB_LOGIN_URL });
 });
 
-router.post("/auth/login/google", (req, res) => {
+router.post("/login/google", (req, res) => {
   loginWithGoogle(req, res);
 });
 
-router.post("/auth/login/github", (req, res) => {
+router.post("/login/github", (req, res) => {
   loginWithGithub(req, res);
 });
 
-router.get("/auth/logout", (req, res) => {
+router.get("/logout", (req, res) => {
   logout(req, res);
 });
 

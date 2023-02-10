@@ -16,3 +16,5 @@ router.get("/:id", getSubject);
 router.post("/", createSubject);
 router.put("/:id", updateSubject);
 router.delete("/:id", deleteSubject);
+
+export default router;
