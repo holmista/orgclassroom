@@ -32,8 +32,8 @@ model Subject {
   id        Int      @id @default(autoincrement())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   userId    Int
-  startTime DateTime
-  endTime   DateTime
+  startTime String   @db.Char(4)
+  endTime   String   @db.Char(4)
   title     String
   Note     Note[]
 }
