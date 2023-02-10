@@ -8,7 +8,7 @@ export async function getAllSubjects(req: Request, res: Response) {
   const subjects = await db.subject.findMany({
     where: { userId: user.id },
   });
-  res.status(200).json(subjects);
+  res.status(200).json({ subjects });
 }
 
 export async function getSubject(req: Request, res: Response) {
@@ -24,7 +24,7 @@ export async function getSubject(req: Request, res: Response) {
   if (!subject) return res.status(404).json({ message: "Subject not found" });
   if (subject.userId !== user.id)
     return res.status(403).json({ message: "Forbidden" });
-  res.status(200).json(subject);
+  res.status(200).json({ subject });
 }
 
 export async function createSubject(req: Request, res: Response) {
@@ -38,7 +38,7 @@ export async function createSubject(req: Request, res: Response) {
       title,
     },
   });
-  res.status(201).json(subject);
+  res.status(201).json({ subject });
 }
 
 export async function updateSubject(req: Request, res: Response) {
@@ -55,7 +55,7 @@ export async function updateSubject(req: Request, res: Response) {
     where: { id },
     data: req.body,
   });
-  res.status(200).json(subject);
+  res.status(200).json({ subject });
 }
 
 export async function deleteSubject(req: Request, res: Response) {
