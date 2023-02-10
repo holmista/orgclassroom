@@ -10,14 +10,14 @@ export const validateCreateSubject = (
 ) => {
   try {
     const { startTime, endTime } = CreateSubjectSchema.parse(req.body);
-    if (!isValidTime(startTime) || !isValidTime(endTime))
-      throw new Error("Invalid time");
+    if (!isValidTime(startTime)) throw new Error("Invalid start time");
+    if (!isValidTime(endTime)) throw new Error("Invalid end time");
     if (parseInt(startTime) >= parseInt(endTime)) {
       throw new Error("Start time must be before end time");
     }
     next();
   } catch (err: any) {
-    res.status(400).json({ message: err.message });
+    return res.status(422).json({ message: err.message });
   }
 };
 
@@ -56,6 +56,6 @@ export const validateUpdateSubject = async (
     }
     next();
   } catch (err: any) {
-    res.status(400).json({ message: err.message });
+    return res.status(422).json({ message: err.message });
   }
 };
