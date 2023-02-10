@@ -34,7 +34,7 @@ abstract class Auth {
         return newUser;
       }
       return userData;
-    } catch (err) {
+    } catch (err: any) {
       throw new Error(err.message);
     }
   }
@@ -50,7 +50,7 @@ abstract class Auth {
       }
       const token = await Session.create(user.id);
       return token;
-    } catch (err) {
+    } catch (err: any) {
       throw new Error(err.message);
     }
   }
@@ -61,7 +61,7 @@ abstract class Auth {
         where: { sessionToken: token },
       });
       return session;
-    } catch (err) {
+    } catch (err: any) {
       throw new Error("invalid token");
     }
   }

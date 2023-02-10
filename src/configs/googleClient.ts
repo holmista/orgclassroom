@@ -73,9 +73,9 @@ class GoogleClient extends SocialClient {
 }
 
 const googleClient = new GoogleClient(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URL,
+  process.env.GOOGLE_CLIENT_ID as string,
+  process.env.GOOGLE_CLIENT_SECRET as string,
+  process.env.GOOGLE_REDIRECT_URL as string,
   "authorization_code",
   "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
 );
