@@ -1,15 +1,20 @@
+export interface IValidationError {
+  [field: string]: {
+    _errors: string[];
+  };
+}
+
 class ValidationError extends Error {
   field: string;
   message: string;
-  error: any;
+  error: IValidationError;
   constructor(field: string, message: string) {
     super();
     this.field = field;
     this.message = message;
-    this.error = {};
+    this.error = {} as IValidationError;
     this.error[field] = { _errors: [message] };
   }
 }
-const a = new ValidationError("test", "not valid");
-console.log(a);
+
 export default ValidationError;
