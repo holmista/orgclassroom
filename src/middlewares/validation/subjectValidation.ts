@@ -22,6 +22,7 @@ export const validateUpdateSubject = async (
   next: NextFunction
 ) => {
   try {
+    // console.log(req.body.startTime, req.body.endTime);
     const { startTime, endTime } = UpdateSubjectSchema.parse(req.body);
     if (startTime && !endTime) {
       const subject = await db.subject.findUnique({
@@ -45,6 +46,6 @@ export const validateUpdateSubject = async (
     }
     next();
   } catch (err: any) {
-    return res.status(422).json({ message: err.message });
+    return res.status(422).json({ errors: err.format() });
   }
 };

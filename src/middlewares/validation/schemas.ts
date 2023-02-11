@@ -56,9 +56,10 @@ export const UpdateSubjectSchema = z
       if (data.startTime && data.endTime) {
         return parseInt(data.startTime) < parseInt(data.endTime);
       }
+      return true;
     },
     {
-      message: "start time must be less than end time",
+      message: "start time must be less than end time kokoko",
       path: ["startTime"],
     }
   );
