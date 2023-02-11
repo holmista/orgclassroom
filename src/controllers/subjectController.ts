@@ -61,7 +61,7 @@ export async function updateSubject(req: Request, res: Response) {
 export async function deleteSubject(req: Request, res: Response) {
   const user = req.user as User;
   const id = parseInt(req.params.id);
-  if (isNaN(id)) return res.status(400).json({ message: "Invalid id" });
+  if (isNaN(id)) return res.status(404).json({ message: "Invalid id" });
   const subject = await db.subject.findUnique({
     where: { id },
   });

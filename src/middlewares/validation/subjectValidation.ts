@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { CreateSubjectSchema, UpdateSubjectSchema } from "./schemas.js";
 import isValidTime from "../../helpers/isValidTime.js";
 import db from "../../../lib/database.js";
+import { z } from "zod";
+import ValidationError from "../../../lib/validationError.js";
 
 export const validateCreateSubject = (
   req: Request,
@@ -30,7 +32,10 @@ export const validateUpdateSubject = async (
       if (!subject)
         return res.status(404).json({ message: "Subject not found" });
       if (parseInt(startTime) >= parseInt(subject.endTime)) {
-        throw new Error("Start time must be before end time");
+        throw new ValidationError(
+          "startTime",
+          "start time must be before end time"
+        );
       }
     }
     if (endTime && !startTime) {
@@ -40,11 +45,17 @@ export const validateUpdateSubject = async (
       if (!subject)
         return res.status(404).json({ message: "Subject not found" });
       if (parseInt(subject.startTime) >= parseInt(endTime)) {
-        throw new Error("Start time must be before end time");
+        throw new ValidationError(
+          "endTime",
+          "end time must be after start time"
+        );
       }
     }
     next();
   } catch (err: any) {
-    return res.status(422).json({ errors: err.format() });
+    if (err instanceof z.ZodError) {
+      return res.status(422).json({ errors: err.format() });
+    }
+    return res.status(422).json({ errors: err.error });
   }
 };
