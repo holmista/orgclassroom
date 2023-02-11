@@ -9,15 +9,10 @@ export const validateCreateSubject = (
   next: NextFunction
 ) => {
   try {
-    const { startTime, endTime } = CreateSubjectSchema.parse(req.body);
-    if (!isValidTime(startTime)) throw new Error("Invalid start time");
-    if (!isValidTime(endTime)) throw new Error("Invalid end time");
-    if (parseInt(startTime) >= parseInt(endTime)) {
-      throw new Error("Start time must be before end time");
-    }
+    CreateSubjectSchema.parse(req.body);
     next();
   } catch (err: any) {
-    return res.status(422).json({ message: err.message });
+    return res.status(422).json({ errors: err.format() });
   }
 };
 
@@ -28,12 +23,6 @@ export const validateUpdateSubject = async (
 ) => {
   try {
     const { startTime, endTime } = UpdateSubjectSchema.parse(req.body);
-    if (startTime && !isValidTime(startTime))
-      throw new Error("Invalid start time");
-    if (endTime && !isValidTime(endTime)) throw new Error("Invalid end time");
-    if (startTime && endTime && parseInt(startTime) >= parseInt(endTime)) {
-      throw new Error("Start time must be before end time");
-    }
     if (startTime && !endTime) {
       const subject = await db.subject.findUnique({
         where: { id: parseInt(req.params.id) },
