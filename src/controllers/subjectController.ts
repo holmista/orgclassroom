@@ -45,13 +45,13 @@ export async function updateSubject(req: Request, res: Response) {
   const user = req.user as User;
   const id = parseInt(req.params.id);
   if (isNaN(id)) return res.status(400).json({ message: "Invalid id" });
-  const subject = await db.subject.findUnique({
+  let subject = await db.subject.findUnique({
     where: { id },
   });
   if (!subject) return res.status(404).json({ message: "Subject not found" });
   if (subject.userId !== user.id)
     return res.status(403).json({ message: "Forbidden" });
-  await db.subject.update({
+  subject = await db.subject.update({
     where: { id },
     data: req.body,
   });

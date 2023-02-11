@@ -22,7 +22,6 @@ export const validateUpdateSubject = async (
   next: NextFunction
 ) => {
   try {
-    // console.log(req.body.startTime, req.body.endTime);
     const { startTime, endTime } = UpdateSubjectSchema.parse(req.body);
     if (startTime && !endTime) {
       const subject = await db.subject.findUnique({
