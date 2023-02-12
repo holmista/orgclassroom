@@ -1,5 +1,6 @@
 import express from "express";
 import Auth from "../../lib/auth.js";
+import StorageManager from "../../lib/storageManager.js";
 import googleClient from "../configs/googleClient.js";
 import githubClient from "../configs/githubClient.js";
 import dotenv from "dotenv";
@@ -11,7 +12,9 @@ class GoogleAuth extends Auth {
   }
   async login() {
     try {
-      const tokens = await googleClient.getTokens(this.code);
+      const tokens = await googleClient.getTokens(
+        decodeURIComponent(this.code)
+      );
       if (!tokens) throw new Error("Something went wrong");
       const userData = await googleClient.getUser(
         tokens.access_token,
@@ -24,6 +27,7 @@ class GoogleAuth extends Auth {
         authProvider: "google",
         authProviderId: userData.id,
       });
+      StorageManager.createUserFolder(user.id);
       const sessionToken = await super.createSession(user);
       return sessionToken;
     } catch (err: any) {
@@ -48,6 +52,7 @@ class GithubAuth extends Auth {
         authProvider: "github",
         authProviderId: String(userData.id),
       });
+      StorageManager.createUserFolder(user.id);
       const sessionToken = await super.createSession(user);
       return sessionToken;
     } catch (err: any) {

@@ -47,6 +47,6 @@ class StorageManager {
 // const f = new Filee();
 // f.writeImage(1, 2, "test.png", imageBuffer);
 
-StorageManager.createSubjectFolder(3, 3);
+// StorageManager.createSubjectFolder(3, 3);
 
-export default new StorageManager();
+export default StorageManager;
