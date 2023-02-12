@@ -27,9 +27,10 @@ async function getGoogleCode(): Promise<string> {
   const elem = await page.waitForSelector(
     "#passwordNext > div > button > div.VfPpkd-Jh9lGc"
   );
-  page.evaluate((btn) => {
-    btn.click();
-  }, elem);
+  elem &&
+    page.evaluate((btn) => {
+      btn.click();
+    }, elem);
   await page.waitForNavigation();
   const url = page.url();
   const parsedUrl = queryString.parseUrl(url);

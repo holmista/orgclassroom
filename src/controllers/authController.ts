@@ -26,7 +26,7 @@ class GoogleAuth extends Auth {
       });
       const sessionToken = await super.createSession(user);
       return sessionToken;
-    } catch (err) {
+    } catch (err: any) {
       throw new Error(err.message);
     }
   }
@@ -50,7 +50,7 @@ class GithubAuth extends Auth {
       });
       const sessionToken = await super.createSession(user);
       return sessionToken;
-    } catch (err) {
+    } catch (err: any) {
       throw new Error(err.message);
     }
   }
@@ -63,7 +63,7 @@ async function loginWithGoogle(req: express.Request, res: express.Response) {
     const googleAuth = new GoogleAuth(code);
     const token = await googleAuth.login();
     res.status(200).cookie("token", token, Auth.cookieOptions).end();
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).json({ message: err.message });
   }
 }
@@ -75,7 +75,7 @@ async function loginWithGithub(req: express.Request, res: express.Response) {
     const githubAuth = new GithubAuth(code);
     const token = await githubAuth.login();
     res.status(200).cookie("token", token, Auth.cookieOptions).end();
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).json({ message: err.message });
   }
 }
@@ -86,7 +86,7 @@ async function logout(req: express.Request, res: express.Response) {
     if (!token) return res.status(401).json({ message: "No token provided" });
     await Auth.logout(token);
     res.status(200).clearCookie("token", Auth.cookieOptions).end();
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).json({ message: err.message });
   }
 }

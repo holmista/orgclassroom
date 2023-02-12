@@ -78,7 +78,7 @@ async function main() {
       data: notes,
     });
     // prisma.$transaction([usersCreated, subjectsCreated, notesCreated]);
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     console.log(users);
     console.log(subjects);

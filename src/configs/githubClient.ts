@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import queryString from "query-string";
 import axios from "axios";
-import SocialClient from "./socialClient.js";
+import SocialClient from "../../lib/socialClient.js";
 
 interface ITokens {
   access_token: string;
@@ -67,20 +67,20 @@ class GithubClient extends SocialClient {
         }
       );
       const primaryEmail: string = responseWEmail.data.filter(
-        (el) => el.primary
+        (el: any) => el.primary
       )[0].email;
       responseWoEmail.data.primary_email = primaryEmail;
       return responseWoEmail.data;
-    } catch (err) {
+    } catch (err: any) {
       return null;
     }
   }
 }
 
 const githubClient = new GithubClient(
-  process.env.GITHUB_CLIENT_ID,
-  process.env.GITHUB_CLIENT_SECRET,
-  process.env.GITHUB_REDIRECT_URL,
+  process.env.GITHUB_CLIENT_ID as string,
+  process.env.GITHUB_CLIENT_SECRET as string,
+  process.env.GITHUB_REDIRECT_URL as string,
   "read:user user:email"
 );
 

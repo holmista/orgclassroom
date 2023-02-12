@@ -8,7 +8,7 @@
     "build": "tsc",
     "dev": "nodemon --exec ts-node-esm src/index.ts",
     "seed": "npx ts-node-esm prisma/seed.ts",
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --verbose --coverage"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +19,8 @@
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "query-string": "^8.1.0"
+    "query-string": "^8.1.0",
+    "zod": "^3.20.6"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
