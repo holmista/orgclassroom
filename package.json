@@ -8,7 +8,7 @@
     "build": "tsc",
     "dev": "nodemon --exec ts-node-esm src/index.ts",
     "seed": "npx ts-node-esm prisma/seed.ts",
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --verbose --coverage"
   },
   "keywords": [],
   "author": "",

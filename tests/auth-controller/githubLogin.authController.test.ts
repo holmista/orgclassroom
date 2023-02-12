@@ -32,7 +32,6 @@ test("do not login user if invalid code is provided github", async () => {
 });
 
 test("login user if valid code is provided github", async () => {
-  await db.user.delete({ where: { email: "fortestingpurposes317@gmail.com" } });
   const code = await getGithubCodePuppeteer();
   const res = await api.post("/auth/login/github").send({
     code,

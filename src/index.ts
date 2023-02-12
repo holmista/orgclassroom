@@ -20,8 +20,6 @@ declare global {
 const app = express();
 setGoogleAuthURL();
 setGithubAuthURL();
-console.log(process.env.GOOGLE_LOGIN_URL);
-console.log(process.env.GITHUB_LOGIN_URL);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -34,8 +32,10 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).end("Something went wrong");
 });
 
-app.listen(3000, () => {
-  console.log("listening on port " + process.env.PORT);
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(3000, () => {
+    console.log("listening on port " + process.env.PORT);
+  });
+}
 
 export default app;
