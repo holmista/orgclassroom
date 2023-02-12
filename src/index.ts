@@ -1,13 +1,13 @@
 import express, { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 dotenv.config();
-import authRouter from "./routes/auth.js";
+import authRouter from "./routes/authRouter.js";
 import subjectRouter from "./routes/subjectRouter.js";
 import setGoogleAuthURL from "./configs/googleAuth.js";
 import setGithubAuthURL from "./configs/githubAuth.js";
 import { User } from "@prisma/client";
 import cookieParser from "cookie-parser";
-import authenticate from "./middlewares/authenticate.js";
+import authenticate from "./middlewares/authentication/authenticate.js";
 
 declare global {
   namespace Express {

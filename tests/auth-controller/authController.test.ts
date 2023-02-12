@@ -1,9 +1,9 @@
 import supertest from "supertest";
 import { test, expect, afterAll } from "@jest/globals";
-import app from "../src/index.js";
-import getGoogleCodePuppeteer from "../src/helpers/getGoogleCodePuppeteer.js";
-import getGithubCodePuppeteer from "../src/helpers/getGithubcodePuppeteer.js";
-import db from "../lib/database.js";
+import app from "../../src/index.js";
+import getGoogleCodePuppeteer from "../../src/helpers/getGoogleCodePuppeteer.js";
+import getGithubCodePuppeteer from "../../src/helpers/getGithubcodePuppeteer.js";
+import db from "../../lib/database.js";
 
 const api = supertest(app);
 const agent = supertest.agent(app);

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import db from "../../lib/database.js";
-import { CreateSubject } from "../middlewares/validation/schemas.js";
+import { CreateSubject } from "../middlewares/data-validation/subjects/schemas.js";
 import { User } from "@prisma/client";
 
 export async function getAllSubjects(req: Request, res: Response) {

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import isValidTime from "../../helpers/isValidTime.js";
+import isValidTime from "../../../helpers/isValidTime.js";
 
 export const CreateSubjectSchema = z
   .object({

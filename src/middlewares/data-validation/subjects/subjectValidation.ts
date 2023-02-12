@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { CreateSubjectSchema, UpdateSubjectSchema } from "./schemas.js";
-import isValidTime from "../../helpers/isValidTime.js";
-import db from "../../../lib/database.js";
+import db from "../../../../lib/database.js";
 import { z } from "zod";
-import ValidationError from "../../../lib/validationError.js";
+import ValidationError from "../../../../lib/validationError.js";
 
 export const validateCreateSubject = (
   req: Request,

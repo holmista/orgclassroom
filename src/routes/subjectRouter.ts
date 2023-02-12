@@ -12,7 +12,7 @@ import {
 import {
   validateCreateSubject,
   validateUpdateSubject,
-} from "../middlewares/validation/subjectValidation.js";
+} from "../middlewares/data-validation/subjects/subjectValidation.js";
 
 const router = express.Router();
 

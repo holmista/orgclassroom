@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import db from "../../lib/database.js";
+import db from "../../../lib/database.js";
 
 async function authenticate(req: Request, res: Response, next: NextFunction) {
   const token = req.cookies.token;

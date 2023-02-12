@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import querystring from "query-string";
 import axios from "axios";
-import SocialClient from "./socialClient.js";
+import SocialClient from "../../lib/socialClient.js";
 
 interface ITokens {
   access_token: string;
