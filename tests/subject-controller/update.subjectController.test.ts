@@ -1,10 +1,10 @@
 import supertest from "supertest";
 import { test, expect, beforeEach } from "@jest/globals";
 import app from "../../src/index.js";
-import Session from "../../lib/session.js";
 import clearDatabase from "../../src/helpers/clearDatabase.js";
 import createUser from "../../prisma/factories/createUserFactory.js";
 import createSubject from "../../prisma/factories/createSubjectFactory.js";
+import createSession from "../../prisma/factories/createSessionFactory.js";
 
 clearDatabase();
 const api = supertest(app);
@@ -22,14 +22,24 @@ test("return error when updating subject with invalid authentication", async () 
   expect(res.body.message).toBe("Unauthorized");
 });
 
+test("return error when updating subject with expired authentication", async () => {
+  const user = await createUser();
+  const session = await createSession(user.id, new Date(), new Date(), "token");
+  const res = await agent
+    .put("/subjects")
+    .set("Cookie", [`token=${session.sessionToken}`]);
+  expect(res.statusCode).toBe(401);
+  expect(res.body).toHaveProperty("message");
+  expect(res.body.message).toBe("Unauthorized");
+});
+
 test("return error when updating subject with invalid id", async () => {
   const user = await createUser();
-  const token = await Session.create(user.id);
+  const session = await createSession(user.id);
   const res = await agent
     .put("/subjects/invalid")
-    .set("Cookie", [`token=${token}`])
+    .set("Cookie", [`token=${session.sessionToken}`])
     .send({ title: "test" });
-  console.log(res.body.errors);
   expect(res.statusCode).toBe(400);
   expect(res.body).toHaveProperty("message");
   expect(res.body.message).toBe("Invalid id");
@@ -37,10 +47,10 @@ test("return error when updating subject with invalid id", async () => {
 
 test("return error when updating subject with id that does not exist", async () => {
   const user = await createUser();
-  const token = await Session.create(user.id);
+  const session = await createSession(user.id);
   const res = await agent
     .put("/subjects/1")
-    .set("Cookie", [`token=${token}`])
+    .set("Cookie", [`token=${session.sessionToken}`])
     .send({ title: "test" });
   expect(res.statusCode).toBe(404);
   expect(res.body).toHaveProperty("message");
@@ -49,11 +59,11 @@ test("return error when updating subject with id that does not exist", async () 
 
 test("return error when updating subject with start time greater than end time", async () => {
   const user = await createUser();
-  const token = await Session.create(user.id);
+  const session = await createSession(user.id);
   const subject = await createSubject(user.id, "1400", "1500", "test");
   const res = await agent
     .put(`/subjects/${subject.id}`)
-    .set("Cookie", [`token=${token}`])
+    .set("Cookie", [`token=${session.sessionToken}`])
     .send({ startTime: "1500", endTime: "1400", title: "test" });
   expect(res.statusCode).toBe(422);
   expect(res.body).toHaveProperty("errors");
@@ -62,13 +72,12 @@ test("return error when updating subject with start time greater than end time",
 
 test("return error when updating subject with start time greater than end time", async () => {
   const user = await createUser();
-  const token = await Session.create(user.id);
+  const session = await createSession(user.id);
   const subject = await createSubject(user.id, "1400", "1500", "test");
   const res = await agent
     .put(`/subjects/${subject.id}`)
-    .set("Cookie", [`token=${token}`])
+    .set("Cookie", [`token=${session.sessionToken}`])
     .send({ startTime: "1600" });
-  console.log(res.body.errors);
   expect(res.statusCode).toBe(422);
   expect(res.body).toHaveProperty("errors");
   expect(res.body.errors).toHaveProperty("startTime");
@@ -76,11 +85,11 @@ test("return error when updating subject with start time greater than end time",
 
 test("return error when updating subject with end time less than start time", async () => {
   const user = await createUser();
-  const token = await Session.create(user.id);
+  const session = await createSession(user.id);
   const subject = await createSubject(user.id, "1400", "1500", "test");
   const res = await agent
     .put(`/subjects/${subject.id}`)
-    .set("Cookie", [`token=${token}`])
+    .set("Cookie", [`token=${session.sessionToken}`])
     .send({ endTime: "1300" });
   expect(res.statusCode).toBe(422);
   expect(res.body).toHaveProperty("errors");
@@ -89,11 +98,11 @@ test("return error when updating subject with end time less than start time", as
 
 test("return error when updating subject with invalid title", async () => {
   const user = await createUser();
-  const token = await Session.create(user.id);
+  const session = await createSession(user.id);
   const subject = await createSubject(user.id, "1400", "1500", "a".repeat(101));
   const res = await agent
     .put(`/subjects/${subject.id}`)
-    .set("Cookie", [`token=${token}`])
+    .set("Cookie", [`token=${session.sessionToken}`])
     .send({ title: "a".repeat(101) });
   expect(res.statusCode).toBe(422);
   expect(res.body).toHaveProperty("errors");
@@ -102,11 +111,11 @@ test("return error when updating subject with invalid title", async () => {
 
 test("successfully update subject with valid updated start time", async () => {
   const user = await createUser();
-  const token = await Session.create(user.id);
+  const session = await createSession(user.id);
   const subject = await createSubject(user.id, "1400", "1500", "test");
   const res = await agent
     .put(`/subjects/${subject.id}`)
-    .set("Cookie", [`token=${token}`])
+    .set("Cookie", [`token=${session.sessionToken}`])
     .send({ startTime: "1300" });
   expect(res.statusCode).toBe(200);
   expect(res.body).toHaveProperty("subject");
@@ -123,11 +132,11 @@ test("successfully update subject with valid updated start time", async () => {
 
 test("successfully update subject with valid updated end time", async () => {
   const user = await createUser();
-  const token = await Session.create(user.id);
+  const session = await createSession(user.id);
   const subject = await createSubject(user.id, "1400", "1500", "test");
   const res = await agent
     .put(`/subjects/${subject.id}`)
-    .set("Cookie", [`token=${token}`])
+    .set("Cookie", [`token=${session.sessionToken}`])
     .send({ endTime: "1600" });
   expect(res.statusCode).toBe(200);
   expect(res.body).toHaveProperty("subject");
