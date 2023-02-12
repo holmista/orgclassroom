@@ -22,11 +22,11 @@ async function getGithubCode(): Promise<string> {
   const authorizeButtonSelector = "#js-oauth-authorize-btn";
   const usernameField = await page.waitForSelector(loginInputSelector);
   await page.click(loginInputSelector);
-  usernameField.type("test-test-katon");
+  usernameField && usernameField.type("test-test-katon");
   await wait(500);
   const passwordField = await page.waitForSelector(passwordInputSelector);
   await page.click(passwordInputSelector);
-  passwordField.type("katon1234567");
+  passwordField && passwordField.type("katon1234567");
   await wait(500);
   await page.click(signInButtonSelector);
   await page.waitForNavigation();
