@@ -62,6 +62,18 @@ export const UpdateSubjectSchema = z
       message: "start time must be less than end time kokoko",
       path: ["startTime"],
     }
+  )
+  .refine(
+    (data) => {
+      if (data.startTime || data.endTime || data.title) {
+        return true;
+      }
+      return false;
+    },
+    {
+      message: "at least one field must be provided",
+      path: ["startTime"],
+    }
   );
 
 type CreateSubject = z.infer<typeof CreateSubjectSchema>;
