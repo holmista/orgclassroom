@@ -11,7 +11,6 @@ import authenticate from "./middlewares/authentication/authenticate.js";
 import multer from "multer";
 const upload = multer();
 import fs from "node:fs/promises";
-import { isArrayBufferView } from "node:util/types";
 
 declare global {
   namespace Express {

@@ -2,8 +2,14 @@ import { User } from "@prisma/client";
 import db from "./database.js";
 import Session from "./session.js";
 import express from "express";
+import SocialClient from "./socialClient.js";
+import StorageManager from "./storageManager.js";
 
 type createUser = Omit<User, "id">;
+export type tokens = {
+  access_token: string;
+  id_token?: string;
+};
 
 abstract class Auth {
   code: string;
@@ -18,7 +24,20 @@ abstract class Auth {
   constructor(code: string) {
     this.code = code;
   }
-  abstract login(): Promise<string>;
+  async login(client: SocialClient) {
+    try {
+      const tokens = (await client.getTokens(this.code)) as tokens;
+      if (!tokens) throw new Error("Something went wrong");
+      const user = await this.getUserData(tokens);
+      StorageManager.createUserFolder(user.id);
+      const sessionToken = await this.createSession(user);
+      return sessionToken;
+    } catch (err: any) {
+      throw new Error(err.message);
+    }
+  }
+
+  abstract getUserData(tokens: tokens): Promise<User>;
 
   async createUser(user: createUser) {
     try {
