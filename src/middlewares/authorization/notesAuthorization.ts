@@ -9,8 +9,11 @@ export async function authorizeGetNote(
 ) {
   const user = req.user as User;
   const noteId = parseInt(req.params.noteId);
+  const subjectId = parseInt(req.params.subjectId);
   if (isNaN(noteId))
     return res.status(400).json({ message: "Invalid note id" });
+  if (isNaN(subjectId))
+    return res.status(400).json({ message: "Invalid subject id" });
   const note = await db.note.findUnique({
     where: { id: parseInt(req.params.noteId) },
     include: { subject: true },
@@ -27,11 +30,11 @@ export async function authorizeCreateNote(
   next: NextFunction
 ) {
   const user = req.user as User;
-  const subjectId = parseInt(req.params.subjectId);
+  const subjectId = parseInt(req.body.subjectId);
   if (isNaN(subjectId))
     return res.status(400).json({ message: "Invalid subject id" });
   const subject = await db.subject.findUnique({
-    where: { id: parseInt(req.params.subjectId) },
+    where: { id: parseInt(req.body.subjectId) },
   });
   if (!subject) return res.status(404).json({ message: "Subject not found" });
   if (subject.userId !== user.id)
@@ -65,8 +68,11 @@ export async function authorizeDeleteNote(
 ) {
   const user = req.user as User;
   const noteId = parseInt(req.params.noteId);
+  const subjectId = parseInt(req.params.subjectId);
   if (isNaN(noteId))
     return res.status(400).json({ message: "Invalid note id" });
+  if (isNaN(subjectId))
+    return res.status(400).json({ message: "Invalid subject id" });
   const note = await db.note.findUnique({
     where: { id: noteId },
     include: { subject: true },
