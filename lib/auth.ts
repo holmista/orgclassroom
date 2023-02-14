@@ -3,7 +3,7 @@ import db from "./database.js";
 import Session from "./session.js";
 import express from "express";
 import SocialClient from "./socialClient.js";
-import StorageManager from "./storageManager.js";
+import ImageManager from "./ImageManager.js";
 
 type createUser = Omit<User, "id">;
 export type tokens = {
@@ -29,7 +29,7 @@ abstract class Auth {
       const tokens = (await client.getTokens(this.code)) as tokens;
       if (!tokens) throw new Error("Something went wrong");
       const user = await this.getUserData(tokens);
-      StorageManager.createUserFolder(user.id);
+      ImageManager.createUserFolder(user.id);
       const sessionToken = await this.createSession(user);
       return sessionToken;
     } catch (err: any) {
