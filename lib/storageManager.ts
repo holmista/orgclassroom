@@ -42,11 +42,20 @@ class StorageManager {
       }
     }
   }
+  static async deleteSubjectFolder(userId: number, subjectId: number) {
+    try {
+      await fs.rmdir(`storage/${userId}/${subjectId}`, { recursive: true });
+    } catch (error: any) {
+      if (error.code === "ENOENT") {
+        throw new Error("path not found");
+      }
+    }
+  }
 }
 // const imageBuffer = await fs.readFile("lib/1.png");
 // const f = new Filee();
 // f.writeImage(1, 2, "test.png", imageBuffer);
 
-// StorageManager.createSubjectFolder(3, 3);
+// StorageManager.deleteSubjectFolder(3, 3);
 
 export default StorageManager;

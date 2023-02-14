@@ -8,6 +8,7 @@ import {
   updateSubject,
   deleteSubject,
 } from "../controllers/subjectController.js";
+import authorizeOperationsSubject from "../middlewares/authorization/subjectsAuthorization.js";
 
 import {
   validateCreateSubject,
@@ -17,9 +18,14 @@ import {
 const router = express.Router();
 
 router.get("/", getAllSubjects);
-router.get("/:id", getSubject);
+router.get("/:id", authorizeOperationsSubject, getSubject);
 router.post("/", validateCreateSubject, createSubject);
-router.put("/:id", validateUpdateSubject, updateSubject);
-router.delete("/:id", deleteSubject);
+router.put(
+  "/:id",
+  validateUpdateSubject,
+  authorizeOperationsSubject,
+  updateSubject
+);
+router.delete("/:id", authorizeOperationsSubject, deleteSubject);
 
 export default router;

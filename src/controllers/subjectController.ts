@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import db from "../../lib/database.js";
 import { CreateSubject } from "../middlewares/data-validation/subjects/schemas.js";
 import { User } from "@prisma/client";
+import StorageManager from "../../lib/storageManager.js";
 
 export async function getAllSubjects(req: Request, res: Response) {
   const user = req.user as User;
@@ -12,18 +13,12 @@ export async function getAllSubjects(req: Request, res: Response) {
 }
 
 export async function getSubject(req: Request, res: Response) {
-  const user = req.user as User;
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) return res.status(400).json({ message: "Invalid id" });
   const subject = await db.subject.findUnique({
-    where: { id },
+    where: { id: parseInt(req.params.id) },
     include: {
       Note: true,
     },
   });
-  if (!subject) return res.status(404).json({ message: "Subject not found" });
-  if (subject.userId !== user.id)
-    return res.status(403).json({ message: "Forbidden" });
   res.status(200).json({ subject });
 }
 
@@ -38,21 +33,13 @@ export async function createSubject(req: Request, res: Response) {
       title,
     },
   });
+  StorageManager.createSubjectFolder(user.id, subject.id);
   res.status(201).json({ subject });
 }
 
 export async function updateSubject(req: Request, res: Response) {
-  const user = req.user as User;
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) return res.status(400).json({ message: "Invalid id" });
-  let subject = await db.subject.findUnique({
-    where: { id },
-  });
-  if (!subject) return res.status(404).json({ message: "Subject not found" });
-  if (subject.userId !== user.id)
-    return res.status(403).json({ message: "Forbidden" });
-  subject = await db.subject.update({
-    where: { id },
+  const subject = await db.subject.update({
+    where: { id: parseInt(req.params.id) },
     data: req.body,
   });
   res.status(200).json({ subject });
@@ -60,16 +47,9 @@ export async function updateSubject(req: Request, res: Response) {
 
 export async function deleteSubject(req: Request, res: Response) {
   const user = req.user as User;
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) return res.status(404).json({ message: "Invalid id" });
-  const subject = await db.subject.findUnique({
-    where: { id },
-  });
-  if (!subject) return res.status(404).json({ message: "Subject not found" });
-  if (subject.userId !== user.id)
-    return res.status(403).json({ message: "Forbidden" });
   await db.subject.delete({
-    where: { id },
+    where: { id: parseInt(req.params.id) },
   });
+  await StorageManager.deleteSubjectFolder(user.id, parseInt(req.params.id));
   res.status(204).end();
 }
