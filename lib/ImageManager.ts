@@ -47,18 +47,38 @@ class ImageManager {
     }
     await Promise.all(promises);
   }
-  async readImage(userId: number, subjectId: number, filename: string) {
-    return await this.fileStorageManager.readFile(userId, subjectId, filename);
+  async readImage(
+    userId: number,
+    subjectId: number,
+    noteId: number,
+    filename: string
+  ) {
+    if (!this.imageSupportedTypes.includes(filename.split(".")[1]))
+      throw new Error("image type not supported");
+    return await this.fileStorageManager.readFile(
+      userId,
+      subjectId,
+      noteId,
+      filename
+    );
   }
 
-  async readImages(userId: number, subjectId: number) {
-    const images = await fs.readdir(`storage/${userId}/${subjectId}`);
-    const promises: Promise<Buffer | undefined>[] = [];
-    for (const image of images) {
-      let readPromise = this.readImage(userId, subjectId, image);
-      promises.push(readPromise);
+  async readImages(userId: number, subjectId: number, noteId: number) {
+    try {
+      let images = await fs.readdir(`storage/${userId}/${subjectId}/${noteId}`);
+      images = images.filter((image) =>
+        this.imageSupportedTypes.includes(image.split(".")[1])
+      );
+      const promises: Promise<Buffer | undefined>[] = [];
+      for (const image of images) {
+        let readPromise = this.readImage(userId, subjectId, noteId, image);
+        promises.push(readPromise);
+      }
+      return await Promise.all(promises);
+    } catch (error: any) {
+      if (error.code === "ENOENT") throw new Error("path not found");
+      else throw new Error("something went wrong");
     }
-    return await Promise.all(promises);
   }
 
   async deleteImage(
@@ -74,6 +94,14 @@ class ImageManager {
       filename
     );
   }
+  async deleteImages(userId: number, subjectId: number, noteId: number) {
+    try {
+      fs.rmdir(`storage/${userId}/${subjectId}/${noteId}`, { recursive: true });
+    } catch (error: any) {
+      if (error.code === "ENOENT") throw new Error("path not found");
+      else throw new Error("something went wrong");
+    }
+  }
 }
 
-export default ImageManager;
+export default ImageManager.getInstance();

@@ -29,12 +29,32 @@ class FileStorageManager {
       this.handleErrors(error);
     }
   }
-  async readFile(userId: number, subjectId: number, filename: string) {
+  async readFile(
+    userId: number,
+    subjectId: number,
+    noteId: number,
+    filename: string
+  ) {
     try {
       const result = await fs.readFile(
-        `${FileStorageManager.baseFolder}/${userId}/${subjectId}/${filename}`
+        `${FileStorageManager.baseFolder}/${userId}/${subjectId}/${noteId}/${filename}`
       );
       return result;
+    } catch (error: any) {
+      this.handleErrors(error);
+    }
+  }
+  async readFiles(userId: number, subjectId: number, noteId: number) {
+    try {
+      const files = await fs.readdir(
+        `storage/${userId}/${subjectId}/${noteId}`
+      );
+      const promises: Promise<Buffer | undefined>[] = [];
+      for (const file of files) {
+        let readPromise = this.readFile(userId, subjectId, noteId, file);
+        promises.push(readPromise);
+      }
+      return await Promise.all(promises);
     } catch (error: any) {
       this.handleErrors(error);
     }
