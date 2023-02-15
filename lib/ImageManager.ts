@@ -1,120 +1,70 @@
 import fs from "node:fs/promises";
 import crypto from "node:crypto";
+import FileStorageManager from "./fileStorageManager.js";
 
 class ImageManager {
-  private readonly imageSupportedTypes = ["png", "jpg", "jpeg"];
-  private static async writeImage(
+  static readonly imageSupportedTypes = ["png", "jpg", "jpeg"];
+  static readonly fileStorageManager = FileStorageManager.getInstance();
+  static async writeImage(
     userId: number,
     subjectId: number,
-    filename: string,
-    content: Buffer
+    image: Express.Multer.File
   ) {
-    try {
-      await fs.writeFile(`storage/${userId}/${subjectId}/${filename}`, content);
-    } catch (error: any) {
-      if (error.code === "ENOENT") {
-        throw new Error("path not found");
-      }
-    }
+    let imageType = image.mimetype.split("/")[1];
+    if (!this.imageSupportedTypes.includes(imageType))
+      throw new Error("image type not supported");
+    let imageName =
+      image.originalname.split(".")[0] +
+      Date.now() +
+      crypto.randomBytes(12).toString("hex") +
+      "." +
+      imageType;
+    await this.fileStorageManager.writeFile(
+      userId,
+      subjectId,
+      imageName,
+      image.buffer
+    );
   }
   static async writeImages(
     userId: number,
     subjectId: number,
-    images: Express.Multer.File[]
+    images: Express.Multer.File[],
+    fileStorageManager: FileStorageManager = FileStorageManager.getInstance()
   ) {
-    try {
-      const promises = [];
-      for (const image of images) {
-        let imageType = image.mimetype.split("/")[1];
-        let imageName =
-          image.originalname.split(".")[0] +
-          Date.now() +
-          crypto.randomBytes(12).toString("hex") +
-          "." +
-          imageType;
-        let writePromise = ImageManager.writeImage(
-          userId,
-          subjectId,
-          imageName,
-          image.buffer
-        );
-        promises.push(writePromise);
-      }
-      await Promise.all(promises);
-    } catch (error: any) {
-      if (error.code === "ENOENT") {
-        throw new Error("path not found");
-      }
-      throw new Error("something went wrong");
+    const promises: Promise<void>[] = [];
+    for (const image of images) {
+      let writePromise = this.writeImage(userId, subjectId, image);
+      promises.push(writePromise);
     }
+    await Promise.all(promises);
   }
   static async readImage(userId: number, subjectId: number, filename: string) {
-    try {
-      await fs.readFile(`storage/${userId}/${subjectId}/${filename}`);
-    } catch (error: any) {
-      if (error.code === "ENOENT") {
-        throw new Error("path not found");
-      }
-    }
+    return await this.fileStorageManager.readFile(userId, subjectId, filename);
   }
-  static async createUserFolder(userId: number) {
-    const userFolders = await fs.readdir("storage");
-    if (!userFolders.includes(userId.toString())) {
-      await fs.mkdir(`storage/${userId}`);
+
+  static async readImages(userId: number, subjectId: number) {
+    const images = await fs.readdir(`storage/${userId}/${subjectId}`);
+    const promises: Promise<Buffer | undefined>[] = [];
+    for (const image of images) {
+      let readPromise = this.readImage(userId, subjectId, image);
+      promises.push(readPromise);
     }
+    return await Promise.all(promises);
   }
-  static async createSubjectFolder(userId: number, subjectId: number) {
-    try {
-      const subjectFolders = await fs.readdir(`storage/${userId}`);
-      if (!subjectFolders.includes(subjectId.toString())) {
-        await fs.mkdir(`storage/${userId}/${subjectId}`);
-      }
-    } catch (error: any) {
-      if (error.code === "ENOENT") {
-        throw new Error("user folder not found");
-      }
-    }
-  }
-  static async deleteSubjectFolder(userId: number, subjectId: number) {
-    try {
-      await fs.rmdir(`storage/${userId}/${subjectId}`, { recursive: true });
-    } catch (error: any) {
-      if (error.code === "ENOENT") {
-        throw new Error("path not found");
-      }
-    }
-  }
-  private static async deleteImage(
+
+  static async deleteImage(
     userId: number,
     subjectId: number,
+    noteId: number,
     filename: string
   ) {
-    try {
-      await fs.unlink(`storage/${userId}/${subjectId}/${filename}`);
-    } catch (error: any) {
-      if (error.code === "ENOENT") {
-        throw new Error("path not found");
-      } else {
-        throw new Error("something went wrong");
-      }
-    }
-  }
-  static async deleteNoteImages(
-    userId: number,
-    subjectId: number,
-    noteId: number
-  ) {
-    try {
-      await fs.rmdir(`storage/${userId}/${subjectId}/${noteId}`, {
-        recursive: true,
-      });
-    } catch (err: any) {
-      if (err.code === "ENOENT") {
-        throw new Error("path not found");
-      } else {
-        throw new Error("something went wrong");
-      }
-    }
+    await this.fileStorageManager.deleteFile(
+      userId,
+      subjectId,
+      noteId,
+      filename
+    );
   }
 }
 // const imageBuffer = await fs.readFile("lib/1.png");
@@ -122,5 +72,26 @@ class ImageManager {
 // f.writeImage(1, 2, "test.png", imageBuffer);
 
 // ImageManager.deleteSubjectFolder(3, 3);
+
+async function wait(ms: number) {
+  const start = Date.now();
+  return await new Promise((resolve) =>
+    setTimeout(
+      (resolve) => console.log(`resolved in ${Date.now() - start}ms`),
+      ms
+    )
+  );
+}
+
+async function loop() {
+  const promises = [];
+  for (let i = 0; i < 50; i++) {
+    promises.push(wait(2000));
+    await wait(2000);
+  }
+  await Promise.all(promises);
+}
+
+loop();
 
 export default ImageManager;
