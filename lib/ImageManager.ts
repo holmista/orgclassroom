@@ -104,4 +104,4 @@ class ImageManager {
   }
 }
 
-export default ImageManager.getInstance();
+export default ImageManager;

@@ -1,8 +1,20 @@
 import { Request, Response } from "express";
 import db from "../../lib/database.js";
 import { CreateSubject } from "../middlewares/data-validation/subjects/schemas.js";
-import { User } from "@prisma/client";
-import StorageManager from "../../lib/storageManager.js";
+import { User, Subject, Note } from "@prisma/client";
+import ImageManager from "../../lib/ImageManager.js";
+import FileStorageManager from "../../lib/fileStorageManager.js";
+
+const imageManager = ImageManager.getInstance();
+const fileStorageManager = FileStorageManager.getInstance();
+
+interface INoteWithFiles extends Note {
+  files: (Buffer | undefined)[];
+}
+
+interface ISubjectWithNotes extends Subject {
+  Note: INoteWithFiles[];
+}
 
 export async function getAllSubjects(req: Request, res: Response) {
   const user = req.user as User;
@@ -13,12 +25,20 @@ export async function getAllSubjects(req: Request, res: Response) {
 }
 
 export async function getSubject(req: Request, res: Response) {
-  const subject = await db.subject.findUnique({
+  const subject = (await db.subject.findUnique({
     where: { id: parseInt(req.params.id) },
     include: {
       Note: true,
     },
-  });
+  })) as ISubjectWithNotes;
+  for (let i = 0; i < subject.Note.length; i++) {
+    const noteFiles = await imageManager.readImages(
+      subject.userId,
+      subject.id,
+      subject.Note[i].id
+    );
+    subject.Note[i].files = noteFiles;
+  }
   res.status(200).json({ subject });
 }
 
@@ -33,7 +53,7 @@ export async function createSubject(req: Request, res: Response) {
       title,
     },
   });
-  StorageManager.createSubjectFolder(user.id, subject.id);
+  fileStorageManager.createSubjectFolder(user.id, subject.id);
   res.status(201).json({ subject });
 }
 
@@ -50,6 +70,9 @@ export async function deleteSubject(req: Request, res: Response) {
   await db.subject.delete({
     where: { id: parseInt(req.params.id) },
   });
-  await StorageManager.deleteSubjectFolder(user.id, parseInt(req.params.id));
+  await fileStorageManager.deleteSubjectFolder(
+    user.id,
+    parseInt(req.params.id)
+  );
   res.status(204).end();
 }

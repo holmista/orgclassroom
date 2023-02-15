@@ -18,7 +18,9 @@ import {
 
 const router = Router();
 
-router.get("/:noteId", authorizeGetNote, getNote);
-router.post("/:subjectId", authorizeCreateNote, validateCreateNote, createNote);
+router.get("/:noteId/:subjectId", authorizeGetNote, getNote);
+router.post("/", authorizeCreateNote, validateCreateNote, createNote);
 router.put("/:noteId", authorizeUpdateNote, validateUpdateNote, updateNote);
-router.delete("/:noteId", authorizeDeleteNote, deleteNote);
+router.delete("/:noteId/:subjectId", authorizeDeleteNote, deleteNote);
+
+export default router;
