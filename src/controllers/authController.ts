@@ -1,7 +1,8 @@
 import express from "express";
 import Auth, { tokens } from "../../lib/auth.js";
-import googleClient from "../configs/googleClient.js";
-import githubClient from "../configs/githubClient.js";
+import SocialClient from "../../lib/socialClient.js";
+import GoogleClient from "../configs/googleClient.js";
+import GithubClient from "../configs/githubClient.js";
 import dotenv from "dotenv";
 dotenv.config();
 import { User } from "@prisma/client";
@@ -12,6 +13,7 @@ class GoogleAuth extends Auth {
   }
   async getUserData(tokens: tokens): Promise<User> {
     try {
+      const googleClient = GoogleClient.getInstance();
       const userData = await googleClient.getUser(
         tokens.access_token,
         tokens.id_token as string
@@ -35,6 +37,7 @@ class GithubAuth extends Auth {
   }
   async getUserData(tokens: tokens): Promise<User> {
     try {
+      const githubClient = GithubClient.getInstance();
       const userData = await githubClient.getUser(tokens.access_token);
       if (!userData) throw new Error("Something went wrong");
       return await super.createUser({
@@ -49,24 +52,32 @@ class GithubAuth extends Auth {
   }
 }
 
-async function loginWithGoogle(req: express.Request, res: express.Response) {
+async function loginWithGoogle(
+  req: express.Request,
+  res: express.Response,
+  client: SocialClient
+) {
   try {
     const code = req.body.code;
     if (!code) return res.status(400).json({ message: "No code provided" });
     const googleAuth = new GoogleAuth(code);
-    const token = await googleAuth.login(googleClient);
+    const token = await googleAuth.login(client);
     res.status(200).cookie("token", token, Auth.cookieOptions).end();
   } catch (err: any) {
     res.status(500).json({ message: err.message });
   }
 }
 
-async function loginWithGithub(req: express.Request, res: express.Response) {
+async function loginWithGithub(
+  req: express.Request,
+  res: express.Response,
+  client: SocialClient
+) {
   try {
     const code = req.body.code;
     if (!code) return res.status(400).json({ message: "No code provided" });
     const githubAuth = new GithubAuth(code);
-    const token = await githubAuth.login(githubClient);
+    const token = await githubAuth.login(client);
     res.status(200).cookie("token", token, Auth.cookieOptions).end();
   } catch (err: any) {
     res.status(500).json({ message: err.message });
