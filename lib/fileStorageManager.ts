@@ -65,14 +65,14 @@ class FileStorageManager {
       this.handleErrors(error);
     }
   }
-  private async createUserFolder(userId: number) {
+  async createUserFolder(userId: number) {
     try {
       await this.createFolder(`${FileStorageManager.baseFolder}/${userId}`);
     } catch (error: any) {
       this.handleErrors(error);
     }
   }
-  private async createSubjectFolder(userId: number, subjectId: number) {
+  async createSubjectFolder(userId: number, subjectId: number) {
     try {
       await this.createFolder(
         `${FileStorageManager.baseFolder}/${userId}/${subjectId}`
@@ -81,14 +81,14 @@ class FileStorageManager {
       this.handleErrors(error);
     }
   }
-  private async deleteUserFolder(userId: number) {
+  async deleteUserFolder(userId: number) {
     try {
       await this.deleteFolder(`${FileStorageManager.baseFolder}/${userId}`);
     } catch (error: any) {
       this.handleErrors(error);
     }
   }
-  private async deleteSubjectFolder(userId: number, subjectId: number) {
+  async deleteSubjectFolder(userId: number, subjectId: number) {
     try {
       await this.deleteFolder(
         `${FileStorageManager.baseFolder}/${userId}/${subjectId}`
