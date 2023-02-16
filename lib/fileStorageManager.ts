@@ -18,12 +18,13 @@ class FileStorageManager {
   async writeFile(
     userId: number,
     subjectId: number,
+    noteId: number,
     filename: string,
     content: Buffer
   ) {
     try {
       await fs.writeFile(
-        `${FileStorageManager.baseFolder}/${userId}/${subjectId}/${filename}`,
+        `${FileStorageManager.baseFolder}/${userId}/${subjectId}/${noteId}/${filename}`,
         content
       );
     } catch (error: any) {

@@ -1,18 +1,9 @@
 import { test, expect, beforeEach, afterAll } from "@jest/globals";
 import FileStorageManager from "../../lib/fileStorageManager";
 import fs from "fs/promises";
+import emptyDir from "../../src/helpers/emptyDir";
 
 const fileStorageManager = FileStorageManager.getInstance();
-
-async function emptyDir() {
-  const dirs = await fs.readdir("storage");
-  const promises: Promise<void>[] = [];
-  for (const dir of dirs) {
-    const rmPromise = fs.rmdir("storage/" + dir, { recursive: true });
-    promises.push(rmPromise);
-  }
-  await Promise.all(promises);
-}
 
 test("return error if path not found when writing a file", async () => {
   await expect(

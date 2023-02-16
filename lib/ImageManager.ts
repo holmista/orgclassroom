@@ -16,6 +16,7 @@ class ImageManager {
   async writeImage(
     userId: number,
     subjectId: number,
+    noteId: number,
     image: Express.Multer.File
   ) {
     let imageType = image.mimetype.split("/")[1];
@@ -30,6 +31,7 @@ class ImageManager {
     await this.fileStorageManager.writeFile(
       userId,
       subjectId,
+      noteId,
       imageName,
       image.buffer
     );
@@ -37,12 +39,13 @@ class ImageManager {
   async writeImages(
     userId: number,
     subjectId: number,
+    noteId: number,
     images: Express.Multer.File[],
     fileStorageManager: FileStorageManager = FileStorageManager.getInstance()
   ) {
     const promises: Promise<void>[] = [];
     for (const image of images) {
-      let writePromise = this.writeImage(userId, subjectId, image);
+      let writePromise = this.writeImage(userId, subjectId, noteId, image);
       promises.push(writePromise);
     }
     await Promise.all(promises);
@@ -87,6 +90,8 @@ class ImageManager {
     noteId: number,
     filename: string
   ) {
+    if (!this.imageSupportedTypes.includes(filename.split(".")[1]))
+      throw new Error("image type not supported");
     await this.fileStorageManager.deleteFile(
       userId,
       subjectId,
@@ -96,7 +101,16 @@ class ImageManager {
   }
   async deleteImages(userId: number, subjectId: number, noteId: number) {
     try {
-      fs.rmdir(`storage/${userId}/${subjectId}/${noteId}`, { recursive: true });
+      let images = await fs.readdir(`storage/${userId}/${subjectId}/${noteId}`);
+      images = images.filter((image) =>
+        this.imageSupportedTypes.includes(image.split(".")[1])
+      );
+      const promises: Promise<void>[] = [];
+      for (const image of images) {
+        let deletePromise = this.deleteImage(userId, subjectId, noteId, image);
+        promises.push(deletePromise);
+      }
+      await Promise.all(promises);
     } catch (error: any) {
       if (error.code === "ENOENT") throw new Error("path not found");
       else throw new Error("something went wrong");
