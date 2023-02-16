@@ -1,10 +1,13 @@
 import { test, expect, jest } from "@jest/globals";
-import getGoogleCodePuppeteer from "../src/helpers/getGoogleCodePuppeteer.js";
-import getGithubCodePuppeteer from "../src/helpers/getGithubcodePuppeteer.js";
+import getGoogleCodePuppeteer from "../../src/helpers/getGoogleCodePuppeteer.js";
+import getGithubCodePuppeteer from "../../src/helpers/getGithubcodePuppeteer.js";
 
-import googleClient from "../src/configs/googleClient.js";
-import githubClient from "../src/configs/githubClient.js";
+import GoogleClient from "../../src/configs/googleClient.js";
+import GithubClient from "../../src/configs/githubClient.js";
 jest.setTimeout(10000);
+
+const googleClient = GoogleClient.getInstance();
+const githubClient = GithubClient.getInstance();
 
 test("return null if invalid code is provided in google get tokens", async () => {
   const result = await googleClient.getTokens("123");

@@ -12,6 +12,7 @@ class FileStorageManager {
   }
   private handleErrors(error: any) {
     if (error.code === "ENOENT") throw new Error("path not found");
+    if (error.code == "EEXIST") throw new Error("folder already exists");
     else throw new Error("something went wrong");
   }
   async writeFile(
@@ -80,42 +81,26 @@ class FileStorageManager {
   }
   private async deleteFolder(path: string) {
     try {
-      await fs.rmdir(path, { recursive: true });
+      await fs.rm(path, { recursive: true });
     } catch (error: any) {
       this.handleErrors(error);
     }
   }
   async createUserFolder(userId: number) {
-    try {
-      await this.createFolder(`${FileStorageManager.baseFolder}/${userId}`);
-    } catch (error: any) {
-      this.handleErrors(error);
-    }
+    await this.createFolder(`${FileStorageManager.baseFolder}/${userId}`);
   }
   async createSubjectFolder(userId: number, subjectId: number) {
-    try {
-      await this.createFolder(
-        `${FileStorageManager.baseFolder}/${userId}/${subjectId}`
-      );
-    } catch (error: any) {
-      this.handleErrors(error);
-    }
+    await this.createFolder(
+      `${FileStorageManager.baseFolder}/${userId}/${subjectId}`
+    );
   }
   async deleteUserFolder(userId: number) {
-    try {
-      await this.deleteFolder(`${FileStorageManager.baseFolder}/${userId}`);
-    } catch (error: any) {
-      this.handleErrors(error);
-    }
+    await this.deleteFolder(`${FileStorageManager.baseFolder}/${userId}`);
   }
   async deleteSubjectFolder(userId: number, subjectId: number) {
-    try {
-      await this.deleteFolder(
-        `${FileStorageManager.baseFolder}/${userId}/${subjectId}`
-      );
-    } catch (error: any) {
-      this.handleErrors(error);
-    }
+    await this.deleteFolder(
+      `${FileStorageManager.baseFolder}/${userId}/${subjectId}`
+    );
   }
 }
 
