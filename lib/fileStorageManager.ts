@@ -103,6 +103,16 @@ class FileStorageManager {
       `${FileStorageManager.baseFolder}/${userId}/${subjectId}`
     );
   }
+  async createNoteFolder(userId: number, subjectId: number, noteId: number) {
+    await this.createFolder(
+      `${FileStorageManager.baseFolder}/${userId}/${subjectId}/${noteId}`
+    );
+  }
+  async deleteNoteFolder(userId: number, subjectId: number, noteId: number) {
+    await this.deleteFolder(
+      `${FileStorageManager.baseFolder}/${userId}/${subjectId}/${noteId}`
+    );
+  }
 }
 
 export default FileStorageManager;
