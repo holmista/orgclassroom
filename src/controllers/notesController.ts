@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 import db from "../../lib/database.js";
 import ImageManager from "../../lib/ImageManager.js";
+import FileStorageManager from "../../lib/fileStorageManager.js";
 import { User, Note } from "@prisma/client";
 
 const imageManager = ImageManager.getInstance();
+const fileStorageManager = FileStorageManager.getInstance();
 
 export async function getNote(req: Request, res: Response) {
   const user = req.user as User;
@@ -28,10 +30,12 @@ export async function createNote(req: Request, res: Response) {
       content: req.body.content,
     },
   });
+  await fileStorageManager.createNoteFolder(user.id, note.subjectId, note.id);
   if (req.files) {
     imageManager.writeImages(
       user.id,
-      req.body.subjectId,
+      note.subjectId,
+      note.id,
       req.files as Express.Multer.File[]
     );
   }
@@ -64,6 +68,7 @@ export async function createNoteImage(req: Request, res: Response) {
   imageManager.writeImage(
     user.id,
     parseInt(req.params.subjectId),
+    parseInt(req.params.noteId),
     req.file as Express.Multer.File
   );
   res.status(201).end();
