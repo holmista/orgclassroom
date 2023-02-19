@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 dotenv.config();
+
 import authRouter from "./routes/authRouter.js";
 import subjectRouter from "./routes/subjectRouter.js";
 import noteRouter from "./routes/noteRouter.js";
@@ -11,7 +12,6 @@ import cookieParser from "cookie-parser";
 import authenticate from "./middlewares/authentication/authenticate.js";
 import multer from "multer";
 const upload = multer();
-import fs from "node:fs/promises";
 
 declare global {
   namespace Express {
@@ -46,7 +46,7 @@ app.use("/notes", authenticate, noteRouter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.log(err);
-  res.status(500).end("Something went wrong");
+  return res.status(500).json({ message: "Something went wrong" });
 });
 
 if (process.env.NODE_ENV !== "test") {

@@ -7,14 +7,14 @@ const fileStorageManager = FileStorageManager.getInstance();
 
 test("return error if path not found when writing a file", async () => {
   await expect(
-    fileStorageManager.writeFile(1, 1, "test.txt", Buffer.from("test"))
+    fileStorageManager.writeFile(1, 1, 1, "test.txt", Buffer.from("test"))
   ).rejects.toThrow("path not found");
 });
 
 test("write file if path found when writing a file", async () => {
   await fs.mkdir("storage/1/1", { recursive: true });
   await expect(
-    fileStorageManager.writeFile(1, 1, "test.txt", Buffer.from("test"))
+    fileStorageManager.writeFile(1, 1, 1, "test.txt", Buffer.from("test"))
   ).resolves.toBeUndefined();
   await expect(fs.access("storage/1/1/test.txt")).resolves.toBeUndefined();
 });

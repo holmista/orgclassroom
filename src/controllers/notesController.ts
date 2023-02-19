@@ -3,6 +3,7 @@ import db from "../../lib/database.js";
 import ImageManager from "../../lib/ImageManager.js";
 import FileStorageManager from "../../lib/fileStorageManager.js";
 import { User, Note } from "@prisma/client";
+// import "express-async-errors";
 
 const imageManager = ImageManager.getInstance();
 const fileStorageManager = FileStorageManager.getInstance();
@@ -21,25 +22,33 @@ export async function getNote(req: Request, res: Response) {
 }
 
 export async function createNote(req: Request, res: Response) {
-  const user = req.user as User;
-  console.log(req.body);
-  const note = await db.note.create({
-    data: {
-      subjectId: parseInt(req.body.subjectId),
-      title: req.body.title,
-      content: req.body.content,
-    },
-  });
-  await fileStorageManager.createNoteFolder(user.id, note.subjectId, note.id);
-  if (req.files) {
-    imageManager.writeImages(
-      user.id,
-      note.subjectId,
-      note.id,
-      req.files as Express.Multer.File[]
-    );
+  try {
+    const user = req.user as User;
+    const note = await db.note.create({
+      data: {
+        subjectId: parseInt(req.body.subjectId),
+        title: req.body.title,
+        content: req.body.content,
+      },
+    });
+    await fileStorageManager.createNoteFolder(user.id, note.subjectId, note.id);
+    if (req.files) {
+      try {
+        await imageManager.writeImages(
+          user.id,
+          note.subjectId,
+          note.id,
+          req.files as Express.Multer.File[]
+        );
+      } catch (e: any) {
+        return res.status(422).json({ message: e.message });
+      }
+    }
+    return res.status(201).json({ note });
+  } catch (e: any) {
+    if (e instanceof Error) res.status(422).json({ message: e.message });
+    return res.status(500).json({ message: "unexpected error" });
   }
-  res.status(201).json({ note });
 }
 
 export async function updateNote(req: Request, res: Response) {
