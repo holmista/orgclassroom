@@ -109,6 +109,35 @@ test("return error when creating note with invalid image type", async () => {
   expect(res.body.message).toBe("image type not supported");
 });
 
+test("create note with valid image types", async () => {
+  const user = await createUser();
+  const session = await createSession(user.id);
+  const subject = await createSubjectFactory(user.id);
+  await fileStorageManager.createUserFolder(user.id);
+  await fileStorageManager.createSubjectFolder(user.id, subject.id);
+  const image = {
+    mimetype: "image/png",
+    originalname: "test.png",
+    buffer: await fs.readFile("tests/test-images/test.png"),
+  } as Express.Multer.File;
+
+  const res = await agent
+    .post("/notes")
+    .set("Cookie", `token=${session.sessionToken}`)
+    .field("subjectId", subject.id)
+    .field("title", "title")
+    .field("content", "content")
+    .attach("note-files", "tests/test-images/test.png", {
+      filename: "test.png",
+      contentType: "image/png",
+    });
+  expect(res.status).toBe(201);
+  expect(res.body).toHaveProperty("note");
+  expect(
+    fs.readdir(`storage/${user.id}/${subject.id}/${res.body.note.id}`)
+  ).resolves.toHaveLength(1);
+});
+
 beforeEach(async () => {
   await clearDatabase();
   await emptyDir();
