@@ -19,24 +19,9 @@ export const CreateNoteSchema = z.object({
       message: "content must be less than 16000 characters long",
     }),
 });
-// .refine(
-//   (data) => {
-//     if (isNaN(parseInt(data.subjectId))) {
-//       return false;
-//     }
-//     return true;
-//   },
-//   { message: "subject id must be an integer", path: ["subjectId"] }
-// );
 
 export const updateNoteSchema = z
   .object({
-    subjectId: z
-      .string({
-        required_error: "title is required",
-        invalid_type_error: "title must be a string",
-      })
-      .optional(),
     title: z
       .string({
         required_error: "title is required",
@@ -56,10 +41,10 @@ export const updateNoteSchema = z
   })
   .refine(
     (data) => {
-      if (data.subjectId || data.title || data.content) {
+      if (data.title || data.content) {
         return true;
       }
       return false;
     },
-    { message: "at least one field must be provided", path: ["subjectId"] }
+    { message: "at least one field must be provided", path: ["title"] }
   );
