@@ -61,6 +61,21 @@ class FileStorageManager {
       this.handleErrors(error);
     }
   }
+
+  async getNoteFilesLinks(userId: number, subjectId: number, noteId: number) {
+    try {
+      const files = await fs.readdir(
+        `storage/${userId}/${subjectId}/${noteId}`
+      );
+      return files.map(
+        (file) =>
+          `${process.env.BASE_URL}/file/${userId}/${subjectId}/${noteId}/${file}`
+      );
+    } catch (error: any) {
+      this.handleErrors(error);
+    }
+  }
+
   async deleteFile(
     userId: number,
     subjectId: number,

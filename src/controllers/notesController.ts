@@ -3,7 +3,6 @@ import db from "../../lib/database.js";
 import ImageManager from "../../lib/ImageManager.js";
 import FileStorageManager from "../../lib/fileStorageManager.js";
 import { User, Note } from "@prisma/client";
-// import "express-async-errors";
 
 const imageManager = ImageManager.getInstance();
 const fileStorageManager = FileStorageManager.getInstance();
@@ -13,7 +12,7 @@ export async function getNote(req: Request, res: Response) {
   const note = (await db.note.findUnique({
     where: { id: parseInt(req.params.noteId) },
   })) as Note;
-  const noteFiles = await imageManager.readImages(
+  const noteFiles = await fileStorageManager.getNoteFilesLinks(
     user.id,
     note.subjectId,
     note.id
@@ -44,7 +43,12 @@ export async function createNote(req: Request, res: Response) {
         return res.status(422).json({ message: e.message });
       }
     }
-    return res.status(201).json({ note });
+    const noteFiles = await fileStorageManager.getNoteFilesLinks(
+      user.id,
+      note.subjectId,
+      note.id
+    );
+    return res.status(201).json({ note: { ...note, files: noteFiles } });
   } catch (e: any) {
     if (e instanceof Error) res.status(422).json({ message: e.message });
     return res.status(500).json({ message: "unexpected error" });
