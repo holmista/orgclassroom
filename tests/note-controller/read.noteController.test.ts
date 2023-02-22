@@ -25,9 +25,7 @@ test("return error when reading note without authentication", async () => {
 test("return error when reading note with invalid note id", async () => {
   const user = await createUser();
   const session = await createSession(user.id);
-  const res = await agent
-    .get("/notes/invalid/invalid")
-    .set("Cookie", `token=${session.sessionToken}`);
+  const res = await agent.get("/notes/invalid/invalid").set("Cookie", `token=${session.sessionToken}`);
   expect(res.status).toBe(400);
   expect(res.body.message).toBe("Invalid note id");
 });
@@ -35,9 +33,7 @@ test("return error when reading note with invalid note id", async () => {
 test("return error when reading note with invalid subject id", async () => {
   const user = await createUser();
   const session = await createSession(user.id);
-  const res = await agent
-    .get("/notes/1/invalid")
-    .set("Cookie", `token=${session.sessionToken}`);
+  const res = await agent.get("/notes/1/invalid").set("Cookie", `token=${session.sessionToken}`);
   expect(res.status).toBe(400);
   expect(res.body.message).toBe("Invalid subject id");
 });
@@ -46,9 +42,7 @@ test("return error when reading note which does not exist", async () => {
   const user = await createUser();
   const session = await createSession(user.id);
   const subject = await createSubjectFactory(user.id);
-  const res = await agent
-    .get(`/notes/1/${subject.id}`)
-    .set("Cookie", `token=${session.sessionToken}`);
+  const res = await agent.get(`/notes/1/${subject.id}`).set("Cookie", `token=${session.sessionToken}`);
   expect(res.status).toBe(404);
   expect(res.body.message).toBe("Note not found");
 });
@@ -57,17 +51,10 @@ test("return error when reading note which does not belong to user", async () =>
   const user = await createUser();
   const session = await createSession(user.id);
   const subject = await createSubjectFactory(user.id);
-  const anotherUser = await createUser(
-    "a@gmail.com",
-    "name",
-    "google",
-    "hghghvg6"
-  );
+  const anotherUser = await createUser("a@gmail.com", "name", "google", "hghghvg6");
   const anotherSubject = await createSubjectFactory(anotherUser.id);
   const note = await createNoteFactory(anotherSubject.id);
-  const res = await agent
-    .get(`/notes/${note.id}/${subject.id}`)
-    .set("Cookie", `token=${session.sessionToken}`);
+  const res = await agent.get(`/notes/${note.id}/${subject.id}`).set("Cookie", `token=${session.sessionToken}`);
   expect(res.status).toBe(403);
   expect(res.body.message).toBe("Forbidden");
 });
@@ -78,9 +65,7 @@ test("return note when reading note which belongs to user", async () => {
   const subject = await createSubjectFactory(user.id);
   const note = await createNoteFactory(subject.id);
   fs.mkdir(`storage/${user.id}/${subject.id}/${note.id}`, { recursive: true });
-  const res = await agent
-    .get(`/notes/${note.id}/${subject.id}`)
-    .set("Cookie", `token=${session.sessionToken}`);
+  const res = await agent.get(`/notes/${note.id}/${subject.id}`).set("Cookie", `token=${session.sessionToken}`);
   expect(res.status).toBe(200);
   expect(res.body).toHaveProperty("note");
 });
@@ -92,13 +77,8 @@ test("return note with images when reading note which belongs to user", async ()
   const note = await createNoteFactory(subject.id);
   fs.mkdir(`storage/${user.id}/${subject.id}/${note.id}`, { recursive: true });
   const imageData = await fs.readFile("tests/test-images/test.png");
-  fs.writeFile(
-    `storage/${user.id}/${subject.id}/${note.id}/test.png`,
-    imageData
-  );
-  const res = await agent
-    .get(`/notes/${note.id}/${subject.id}`)
-    .set("Cookie", `token=${session.sessionToken}`);
+  fs.writeFile(`storage/${user.id}/${subject.id}/${note.id}/test.png`, imageData);
+  const res = await agent.get(`/notes/${note.id}/${subject.id}`).set("Cookie", `token=${session.sessionToken}`);
   expect(res.status).toBe(200);
   expect(res.body).toHaveProperty("note");
   expect(res.body.note.files).toHaveLength(1);

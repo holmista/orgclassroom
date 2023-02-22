@@ -34,8 +34,8 @@ test("logout user if valid session token is provided", async () => {
       userId: user.id,
       createdAt: new Date(),
       expiresAt: new Date(),
-      sessionToken: "token",
-    },
+      sessionToken: "token"
+    }
   });
   const token = session.sessionToken;
   const res = await agent

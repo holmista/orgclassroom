@@ -43,10 +43,7 @@ test("return user info if valid access and id tokens are provided google", async
   expect(tokens).toHaveProperty("access_token");
   expect(tokens).toHaveProperty("id_token");
   const validTokens = tokens as { access_token: string; id_token: string };
-  const result = await googleClient.getUser(
-    validTokens.access_token,
-    validTokens.id_token
-  );
+  const result = await googleClient.getUser(validTokens.access_token, validTokens.id_token);
   expect(result).toHaveProperty("email");
   expect(result).toHaveProperty("name");
   expect(result).toHaveProperty("id");

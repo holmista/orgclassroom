@@ -6,28 +6,26 @@ export const CreateSubjectSchema = z
     startTime: z
       .string({
         required_error: "start time is required",
-        invalid_type_error: "start time must be a string",
+        invalid_type_error: "start time must be a string"
       })
       .length(4, { message: "start time must be 4 characters long" })
       .refine((val) => isValidTime(val), {
-        message: "end time must be a valid time",
+        message: "end time must be a valid time"
       }),
     endTime: z
       .string({
         required_error: "end time is required",
-        invalid_type_error: "end time must be a string",
+        invalid_type_error: "end time must be a string"
       })
       .length(4, { message: "end time must be 4 characters long" })
       .refine((val) => isValidTime(val), {
-        message: "end time must be a valid time",
+        message: "end time must be a valid time"
       }),
-    title: z
-      .string()
-      .max(100, { message: "title must be less than 100 characters long" }),
+    title: z.string().max(100, { message: "title must be less than 100 characters long" })
   })
   .refine((data) => parseInt(data.startTime) < parseInt(data.endTime), {
     message: "start time must be less than end time",
-    path: ["startTime"],
+    path: ["startTime"]
   });
 
 export const UpdateSubjectSchema = z
@@ -35,21 +33,18 @@ export const UpdateSubjectSchema = z
     startTime: z
       .string({
         required_error: "start time is required",
-        invalid_type_error: "start time must be a string",
+        invalid_type_error: "start time must be a string"
       })
       .length(4, { message: "start time must be 4 characters long" })
       .optional(),
     endTime: z
       .string({
         required_error: "end time is required",
-        invalid_type_error: "end time must be a string",
+        invalid_type_error: "end time must be a string"
       })
       .length(4, { message: "end time must be 4 characters long" })
       .optional(),
-    title: z
-      .string()
-      .max(100, { message: "title must be less than 100 characters long" })
-      .optional(),
+    title: z.string().max(100, { message: "title must be less than 100 characters long" }).optional()
   })
   .refine(
     (data) => {
@@ -60,7 +55,7 @@ export const UpdateSubjectSchema = z
     },
     {
       message: "start time must be less than end time kokoko",
-      path: ["startTime"],
+      path: ["startTime"]
     }
   )
   .refine(
@@ -72,7 +67,7 @@ export const UpdateSubjectSchema = z
     },
     {
       message: "at least one field must be provided",
-      path: ["startTime"],
+      path: ["startTime"]
     }
   );
 

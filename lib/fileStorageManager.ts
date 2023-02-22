@@ -15,32 +15,16 @@ class FileStorageManager {
     if (error.code == "EEXIST") throw new Error("folder already exists");
     else throw new Error("something went wrong");
   }
-  async writeFile(
-    userId: number,
-    subjectId: number,
-    noteId: number,
-    filename: string,
-    content: Buffer
-  ) {
+  async writeFile(userId: number, subjectId: number, noteId: number, filename: string, content: Buffer) {
     try {
-      await fs.writeFile(
-        `${FileStorageManager.baseFolder}/${userId}/${subjectId}/${noteId}/${filename}`,
-        content
-      );
+      await fs.writeFile(`${FileStorageManager.baseFolder}/${userId}/${subjectId}/${noteId}/${filename}`, content);
     } catch (error: any) {
       this.handleErrors(error);
     }
   }
-  async readFile(
-    userId: number,
-    subjectId: number,
-    noteId: number,
-    filename: string
-  ) {
+  async readFile(userId: number, subjectId: number, noteId: number, filename: string) {
     try {
-      const result = await fs.readFile(
-        `${FileStorageManager.baseFolder}/${userId}/${subjectId}/${noteId}/${filename}`
-      );
+      const result = await fs.readFile(`${FileStorageManager.baseFolder}/${userId}/${subjectId}/${noteId}/${filename}`);
       return result;
     } catch (error: any) {
       this.handleErrors(error);
@@ -48,9 +32,7 @@ class FileStorageManager {
   }
   async readFiles(userId: number, subjectId: number, noteId: number) {
     try {
-      const files = await fs.readdir(
-        `storage/${userId}/${subjectId}/${noteId}`
-      );
+      const files = await fs.readdir(`storage/${userId}/${subjectId}/${noteId}`);
       const promises: Promise<Buffer | undefined>[] = [];
       for (const file of files) {
         let readPromise = this.readFile(userId, subjectId, noteId, file);
@@ -64,24 +46,14 @@ class FileStorageManager {
 
   async getNoteFilesLinks(userId: number, subjectId: number, noteId: number) {
     try {
-      const files = await fs.readdir(
-        `storage/${userId}/${subjectId}/${noteId}`
-      );
-      return files.map(
-        (file) =>
-          `${process.env.BASE_URL}/file/${userId}/${subjectId}/${noteId}/${file}`
-      );
+      const files = await fs.readdir(`storage/${userId}/${subjectId}/${noteId}`);
+      return files.map((file) => `${process.env.BASE_URL}/file/${userId}/${subjectId}/${noteId}/${file}`);
     } catch (error: any) {
       this.handleErrors(error);
     }
   }
 
-  async deleteFile(
-    userId: number,
-    subjectId: number,
-    noteId: number,
-    filename: string
-  ) {
+  async deleteFile(userId: number, subjectId: number, noteId: number, filename: string) {
     try {
       await fs.unlink(`storage/${userId}/${subjectId}/${noteId}/${filename}`);
     } catch (error: any) {
@@ -106,27 +78,19 @@ class FileStorageManager {
     await this.createFolder(`${FileStorageManager.baseFolder}/${userId}`);
   }
   async createSubjectFolder(userId: number, subjectId: number) {
-    await this.createFolder(
-      `${FileStorageManager.baseFolder}/${userId}/${subjectId}`
-    );
+    await this.createFolder(`${FileStorageManager.baseFolder}/${userId}/${subjectId}`);
   }
   async deleteUserFolder(userId: number) {
     await this.deleteFolder(`${FileStorageManager.baseFolder}/${userId}`);
   }
   async deleteSubjectFolder(userId: number, subjectId: number) {
-    await this.deleteFolder(
-      `${FileStorageManager.baseFolder}/${userId}/${subjectId}`
-    );
+    await this.deleteFolder(`${FileStorageManager.baseFolder}/${userId}/${subjectId}`);
   }
   async createNoteFolder(userId: number, subjectId: number, noteId: number) {
-    await this.createFolder(
-      `${FileStorageManager.baseFolder}/${userId}/${subjectId}/${noteId}`
-    );
+    await this.createFolder(`${FileStorageManager.baseFolder}/${userId}/${subjectId}/${noteId}`);
   }
   async deleteNoteFolder(userId: number, subjectId: number, noteId: number) {
-    await this.deleteFolder(
-      `${FileStorageManager.baseFolder}/${userId}/${subjectId}/${noteId}`
-    );
+    await this.deleteFolder(`${FileStorageManager.baseFolder}/${userId}/${subjectId}/${noteId}`);
   }
 }
 

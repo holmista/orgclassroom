@@ -1,20 +1,12 @@
 import { Router } from "express";
-import {
-  getNote,
-  createNote,
-  updateNote,
-  deleteNote,
-} from "../controllers/notesController.js";
+import { getNote, createNote, updateNote, deleteNote } from "../controllers/notesController.js";
 import {
   authorizeGetNote,
   authorizeCreateNote,
   authorizeUpdateNote,
-  authorizeDeleteNote,
+  authorizeDeleteNote
 } from "../middlewares/authorization/notesAuthorization.js";
-import {
-  validateCreateNote,
-  validateUpdateNote,
-} from "../middlewares/data-validation/notes/noteValidation.js";
+import { validateCreateNote, validateUpdateNote } from "../middlewares/data-validation/notes/noteValidation.js";
 
 const router = Router();
 

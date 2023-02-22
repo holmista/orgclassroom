@@ -21,7 +21,7 @@ abstract class Auth {
     httpOnly: true,
     secure: true,
     sameSite: "strict",
-    maxAge: Number(process.env.SESSION_EXPIRES_IN),
+    maxAge: Number(process.env.SESSION_EXPIRES_IN)
   };
   constructor(code: string) {
     this.code = code;
@@ -45,12 +45,12 @@ abstract class Auth {
     try {
       const userData = await db.user.findFirst({
         where: {
-          email: user.email,
-        },
+          email: user.email
+        }
       });
       if (!userData) {
         const newUser = await db.user.create({
-          data: user,
+          data: user
         });
         return newUser;
       }
@@ -63,7 +63,7 @@ abstract class Auth {
   async createSession(user: User) {
     try {
       const session = await db.session.findFirst({
-        where: { userId: user.id },
+        where: { userId: user.id }
       });
       if (session) {
         const token = await Session.extend(user.id);
@@ -79,7 +79,7 @@ abstract class Auth {
   static async logout(token: string) {
     try {
       const session = await db.session.delete({
-        where: { sessionToken: token },
+        where: { sessionToken: token }
       });
       return session;
     } catch (err: any) {

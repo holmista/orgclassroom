@@ -25,9 +25,7 @@ test("return error when updating subject with invalid authentication", async () 
 test("return error when updating subject with expired authentication", async () => {
   const user = await createUser();
   const session = await createSession(user.id, new Date(), new Date(), "token");
-  const res = await agent
-    .put("/subjects")
-    .set("Cookie", [`token=${session.sessionToken}`]);
+  const res = await agent.put("/subjects").set("Cookie", [`token=${session.sessionToken}`]);
   expect(res.statusCode).toBe(401);
   expect(res.body).toHaveProperty("message");
   expect(res.body.message).toBe("Unauthorized");

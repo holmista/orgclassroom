@@ -34,7 +34,7 @@ test("do not login user if invalid code is provided github", async () => {
 test("login user if valid code is provided github", async () => {
   const code = await getGithubCodePuppeteer();
   const res = await api.post("/auth/login/github").send({
-    code,
+    code
   });
   expect(res.statusCode).toBe(200);
   expect(res.header["set-cookie"][0]).toMatch(/token/);

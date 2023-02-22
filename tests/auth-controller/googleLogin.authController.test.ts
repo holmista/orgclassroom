@@ -32,7 +32,7 @@ test("do not login user if invalid code is provided google", async () => {
 test("login user if valid code is provided google", async () => {
   const code = await getGoogleCodePuppeteer();
   const res = await api.post("/auth/login/google").send({
-    code,
+    code
   });
   expect(res.statusCode).toBe(200);
   expect(res.header["set-cookie"][0]).toMatch(/token/);

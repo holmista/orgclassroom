@@ -1,29 +1,27 @@
-import express from "express";
-import Auth, { tokens } from "../../lib/auth.js";
-import SocialClient from "../../lib/socialClient.js";
+import type express from "express";
+import Auth, { type tokens } from "../../lib/auth.js";
+import type SocialClient from "../../lib/socialClient.js";
 import GoogleClient from "../configs/googleClient.js";
 import GithubClient from "../configs/githubClient.js";
 import dotenv from "dotenv";
+import { type User } from "@prisma/client";
 dotenv.config();
-import { User } from "@prisma/client";
 
 class GoogleAuth extends Auth {
   constructor(code: string) {
     super(code);
   }
+
   async getUserData(tokens: tokens): Promise<User> {
     try {
       const googleClient = GoogleClient.getInstance();
-      const userData = await googleClient.getUser(
-        tokens.access_token,
-        tokens.id_token as string
-      );
+      const userData = await googleClient.getUser(tokens.access_token, tokens.id_token as string);
       if (!userData) throw new Error("Something went wrong");
       return await super.createUser({
         email: userData.email,
         name: userData.name,
         authProvider: "google",
-        authProviderId: userData.id,
+        authProviderId: userData.id
       });
     } catch (err: any) {
       throw new Error(err.message);
@@ -35,6 +33,7 @@ class GithubAuth extends Auth {
   constructor(code: string) {
     super(code);
   }
+
   async getUserData(tokens: tokens): Promise<User> {
     try {
       const githubClient = GithubClient.getInstance();
@@ -44,7 +43,7 @@ class GithubAuth extends Auth {
         email: userData.primary_email,
         name: userData.login,
         authProvider: "github",
-        authProviderId: String(userData.id),
+        authProviderId: String(userData.id)
       });
     } catch (err: any) {
       throw new Error(err.message);
@@ -52,13 +51,9 @@ class GithubAuth extends Auth {
   }
 }
 
-async function loginWithGoogle(
-  req: express.Request,
-  res: express.Response,
-  client: SocialClient
-) {
+async function loginWithGoogle(req: express.Request, res: express.Response, client: SocialClient) {
   try {
-    const code = req.body.code;
+    const code = req.body.code as string;
     if (!code) return res.status(400).json({ message: "No code provided" });
     const googleAuth = new GoogleAuth(code);
     const token = await googleAuth.login(client);
@@ -68,11 +63,7 @@ async function loginWithGoogle(
   }
 }
 
-async function loginWithGithub(
-  req: express.Request,
-  res: express.Response,
-  client: SocialClient
-) {
+async function loginWithGithub(req: express.Request, res: express.Response, client: SocialClient) {
   try {
     const code = req.body.code;
     if (!code) return res.status(400).json({ message: "No code provided" });

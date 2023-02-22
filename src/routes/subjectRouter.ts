@@ -6,13 +6,13 @@ import {
   getSubject,
   createSubject,
   updateSubject,
-  deleteSubject,
+  deleteSubject
 } from "../controllers/subjectController.js";
 import authorizeOperationsSubject from "../middlewares/authorization/subjectsAuthorization.js";
 
 import {
   validateCreateSubject,
-  validateUpdateSubject,
+  validateUpdateSubject
 } from "../middlewares/data-validation/subjects/subjectValidation.js";
 
 const router = express.Router();
@@ -20,12 +20,7 @@ const router = express.Router();
 router.get("/", getAllSubjects);
 router.get("/:id", authorizeOperationsSubject, getSubject);
 router.post("/", validateCreateSubject, createSubject);
-router.put(
-  "/:id",
-  validateUpdateSubject,
-  authorizeOperationsSubject,
-  updateSubject
-);
+router.put("/:id", validateUpdateSubject, authorizeOperationsSubject, updateSubject);
 router.delete("/:id", authorizeOperationsSubject, deleteSubject);
 
 export default router;

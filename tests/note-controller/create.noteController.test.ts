@@ -24,10 +24,7 @@ test("return error when creating note without authentication", async () => {
 test("return error when creating note without subject id", async () => {
   const user = await createUser();
   const session = await createSession(user.id);
-  const res = await agent
-    .post("/notes")
-    .set("Cookie", `token=${session.sessionToken}`)
-    .send({ content: "content" });
+  const res = await agent.post("/notes").set("Cookie", `token=${session.sessionToken}`).send({ content: "content" });
   expect(res.status).toBe(400);
   expect(res.body.message).toBe("Invalid subject id");
 });
@@ -49,10 +46,7 @@ test("return error when creating note with only subject id field", async () => {
   const subject = await createSubjectFactory(user.id);
   await fileStorageManager.createUserFolder(user.id);
   await fileStorageManager.createSubjectFolder(user.id, subject.id);
-  const res = await agent
-    .post("/notes")
-    .set("Cookie", `token=${session.sessionToken}`)
-    .send({ subjectId: subject.id });
+  const res = await agent.post("/notes").set("Cookie", `token=${session.sessionToken}`).send({ subjectId: subject.id });
   expect(res.status).toBe(422);
   expect(res.body).toHaveProperty("errors");
   expect(res.body.errors.title._errors[0]).toBe("title is required");
@@ -71,16 +65,12 @@ test("return error when creating note with invalid content and title fields", as
     .send({
       subjectId: subject.id,
       title: "t".repeat(192),
-      content: "c".repeat(16001),
+      content: "c".repeat(16001)
     });
   expect(res.status).toBe(422);
   expect(res.body).toHaveProperty("errors");
-  expect(res.body.errors.content._errors[0]).toBe(
-    "content must be less than 16000 characters long"
-  );
-  expect(res.body.errors.title._errors[0]).toBe(
-    "title must be less than 191 characters long"
-  );
+  expect(res.body.errors.content._errors[0]).toBe("content must be less than 16000 characters long");
+  expect(res.body.errors.title._errors[0]).toBe("title must be less than 191 characters long");
 });
 
 test("return error when creating note with invalid image type", async () => {
@@ -92,7 +82,7 @@ test("return error when creating note with invalid image type", async () => {
   const image = {
     mimetype: "image/png",
     originalname: "test.png",
-    buffer: await fs.readFile("tests/test-images/test.png"),
+    buffer: await fs.readFile("tests/test-images/test.png")
   } as Express.Multer.File;
 
   const res = await agent
@@ -103,7 +93,7 @@ test("return error when creating note with invalid image type", async () => {
     .field("content", "content")
     .attach("note-files", "tests/test-images/test.png", {
       filename: "test.png",
-      contentType: "image/gif",
+      contentType: "image/gif"
     });
   expect(res.status).toBe(422);
   expect(res.body.message).toBe("image type not supported");
@@ -118,7 +108,7 @@ test("create note with valid image types", async () => {
   const image = {
     mimetype: "image/png",
     originalname: "test.png",
-    buffer: await fs.readFile("tests/test-images/test.png"),
+    buffer: await fs.readFile("tests/test-images/test.png")
   } as Express.Multer.File;
 
   const res = await agent
@@ -129,13 +119,11 @@ test("create note with valid image types", async () => {
     .field("content", "content")
     .attach("note-files", "tests/test-images/test.png", {
       filename: "test.png",
-      contentType: "image/png",
+      contentType: "image/png"
     });
   expect(res.status).toBe(201);
   expect(res.body).toHaveProperty("note");
-  expect(
-    fs.readdir(`storage/${user.id}/${subject.id}/${res.body.note.id}`)
-  ).resolves.toHaveLength(1);
+  expect(fs.readdir(`storage/${user.id}/${subject.id}/${res.body.note.id}`)).resolves.toHaveLength(1);
 });
 
 beforeEach(async () => {

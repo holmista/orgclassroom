@@ -9,11 +9,9 @@ class Session {
       data: {
         userId: userId,
         createdAt: new Date(),
-        expiresAt: new Date(
-          new Date().getTime() + Number(process.env.SESSION_EXPIRES_IN)
-        ),
-        sessionToken: randomUUID(),
-      },
+        expiresAt: new Date(new Date().getTime() + Number(process.env.SESSION_EXPIRES_IN)),
+        sessionToken: randomUUID()
+      }
     });
     return newSession.sessionToken;
   }
@@ -22,10 +20,8 @@ class Session {
     const updatedSession = await db.session.update({
       where: { userId: userId },
       data: {
-        expiresAt: new Date(
-          new Date().getTime() + Number(process.env.SESSION_EXPIRES_IN)
-        ),
-      },
+        expiresAt: new Date(new Date().getTime() + Number(process.env.SESSION_EXPIRES_IN))
+      }
     });
     return updatedSession.sessionToken;
   }
