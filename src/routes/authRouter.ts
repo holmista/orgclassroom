@@ -3,11 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import GoogleClient from "../configs/googleClient.js";
 import GithubClient from "../configs/githubClient.js";
-import {
-  loginWithGithub,
-  loginWithGoogle,
-  logout,
-} from "../controllers/authController.js";
+import { loginWithGithub, loginWithGoogle, logout } from "../controllers/authController.js";
 
 const router = express.Router();
 const googleClient = GoogleClient.getInstance();

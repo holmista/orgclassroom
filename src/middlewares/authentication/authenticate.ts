@@ -9,7 +9,7 @@ async function authenticate(req: Request, res: Response, next: NextFunction) {
   try {
     const session = await db.session.findFirst({
       where: { sessionToken: token },
-      include: { user: true },
+      include: { user: true }
     });
     if (!session) {
       return res.status(401).json({ message: "Unauthorized" });

@@ -65,9 +65,7 @@ test("return error when updating note with invalid title", async () => {
     .set("Cookie", `token=${session.sessionToken}`)
     .send({ title: "a".repeat(192), content: "new content" });
   expect(res.status).toBe(422);
-  expect(res.body.errors.title._errors[0]).toBe(
-    "title must be less than 191 characters long"
-  );
+  expect(res.body.errors.title._errors[0]).toBe("title must be less than 191 characters long");
 });
 
 test("return error when updating note with invalid content", async () => {
@@ -80,9 +78,7 @@ test("return error when updating note with invalid content", async () => {
     .set("Cookie", `token=${session.sessionToken}`)
     .send({ title: "new title", content: "a".repeat(16001) });
   expect(res.status).toBe(422);
-  expect(res.body.errors.content._errors[0]).toBe(
-    "content must be less than 16000 characters long"
-  );
+  expect(res.body.errors.content._errors[0]).toBe("content must be less than 16000 characters long");
 });
 
 test("return error when updating node with no fields", async () => {
@@ -90,14 +86,9 @@ test("return error when updating node with no fields", async () => {
   const session = await createSession(user.id);
   const subject = await createSubjectFactory(user.id);
   const note = await createNoteFactory(subject.id);
-  const res = await agent
-    .put(`/notes/${note.id}`)
-    .set("Cookie", `token=${session.sessionToken}`)
-    .send({});
+  const res = await agent.put(`/notes/${note.id}`).set("Cookie", `token=${session.sessionToken}`).send({});
   expect(res.status).toBe(422);
-  expect(res.body.errors.title._errors[0]).toBe(
-    "at least one field must be provided"
-  );
+  expect(res.body.errors.title._errors[0]).toBe("at least one field must be provided");
 });
 
 test("update note with valid data", async () => {

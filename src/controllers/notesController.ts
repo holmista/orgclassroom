@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
+import { type Request, type Response } from "express";
 import db from "../../lib/database.js";
 import ImageManager from "../../lib/ImageManager.js";
 import FileStorageManager from "../../lib/fileStorageManager.js";
-import { User, Note } from "@prisma/client";
+import { type User, type Note } from "@prisma/client";
 
 const imageManager = ImageManager.getInstance();
 const fileStorageManager = FileStorageManager.getInstance();
@@ -10,13 +10,9 @@ const fileStorageManager = FileStorageManager.getInstance();
 export async function getNote(req: Request, res: Response) {
   const user = req.user as User;
   const note = (await db.note.findUnique({
-    where: { id: parseInt(req.params.noteId) },
+    where: { id: parseInt(req.params.noteId) }
   })) as Note;
-  const noteFiles = await fileStorageManager.getNoteFilesLinks(
-    user.id,
-    note.subjectId,
-    note.id
-  );
+  const noteFiles = await fileStorageManager.getNoteFilesLinks(user.id, note.subjectId, note.id);
   res.status(200).json({ note: { ...note, files: noteFiles } });
 }
 
@@ -27,27 +23,18 @@ export async function createNote(req: Request, res: Response) {
       data: {
         subjectId: parseInt(req.body.subjectId),
         title: req.body.title,
-        content: req.body.content,
-      },
+        content: req.body.content
+      }
     });
     await fileStorageManager.createNoteFolder(user.id, note.subjectId, note.id);
     if (req.files) {
       try {
-        await imageManager.writeImages(
-          user.id,
-          note.subjectId,
-          note.id,
-          req.files as Express.Multer.File[]
-        );
+        await imageManager.writeImages(user.id, note.subjectId, note.id, req.files as Express.Multer.File[]);
       } catch (e: any) {
         return res.status(422).json({ message: e.message });
       }
     }
-    const noteFiles = await fileStorageManager.getNoteFilesLinks(
-      user.id,
-      note.subjectId,
-      note.id
-    );
+    const noteFiles = await fileStorageManager.getNoteFilesLinks(user.id, note.subjectId, note.id);
     return res.status(201).json({ note: { ...note, files: noteFiles } });
   } catch (e: any) {
     if (e instanceof Error) res.status(422).json({ message: e.message });
@@ -58,7 +45,7 @@ export async function createNote(req: Request, res: Response) {
 export async function updateNote(req: Request, res: Response) {
   const note = await db.note.update({
     where: { id: parseInt(req.params.noteId) },
-    data: req.body,
+    data: req.body
   });
   res.status(200).json({ note });
 }
@@ -66,19 +53,15 @@ export async function updateNote(req: Request, res: Response) {
 export async function deleteNote(req: Request, res: Response) {
   const user = req.user as User;
   await db.note.delete({
-    where: { id: parseInt(req.params.noteId) },
+    where: { id: parseInt(req.params.noteId) }
   });
-  await fileStorageManager.deleteNoteFolder(
-    user.id,
-    parseInt(req.params.subjectId),
-    parseInt(req.params.noteId)
-  );
+  await fileStorageManager.deleteNoteFolder(user.id, parseInt(req.params.subjectId), parseInt(req.params.noteId));
   res.status(204).end();
 }
 
 export async function createNoteImage(req: Request, res: Response) {
   const user = req.user as User;
-  imageManager.writeImage(
+  await imageManager.writeImage(
     user.id,
     parseInt(req.params.subjectId),
     parseInt(req.params.noteId),
@@ -89,7 +72,7 @@ export async function createNoteImage(req: Request, res: Response) {
 
 export async function deleteNoteImage(req: Request, res: Response) {
   const user = req.user as User;
-  imageManager.deleteImage(
+  await imageManager.deleteImage(
     user.id,
     parseInt(req.params.subjectId),
     parseInt(req.params.noteId),

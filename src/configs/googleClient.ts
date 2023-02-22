@@ -46,8 +46,8 @@ class GoogleClient extends SocialClient {
       prompt: "consent",
       scope: [
         "https://www.googleapis.com/auth/userinfo.profile",
-        "https://www.googleapis.com/auth/userinfo.email",
-      ].join(" "),
+        "https://www.googleapis.com/auth/userinfo.email"
+      ].join(" ")
     };
     return `${rootUrl}?${querystring.stringify(options)}`;
   }
@@ -59,7 +59,7 @@ class GoogleClient extends SocialClient {
         client_secret: this.client_secret,
         redirect_uri: this.redirect_uri,
         grant_type: this.grant_type,
-        scope: this.scope,
+        scope: this.scope
       });
       const access_token: string = response.data.access_token;
       const refresh_token: string = response.data.refresh_token;
@@ -75,8 +75,8 @@ class GoogleClient extends SocialClient {
         `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`,
         {
           headers: {
-            Authorization: `Bearer ${id_token}`,
-          },
+            Authorization: `Bearer ${id_token}`
+          }
         }
       );
       return response.data;

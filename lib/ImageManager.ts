@@ -13,28 +13,12 @@ class ImageManager {
     }
     return ImageManager.instance;
   }
-  async writeImage(
-    userId: number,
-    subjectId: number,
-    noteId: number,
-    image: Express.Multer.File
-  ) {
+  async writeImage(userId: number, subjectId: number, noteId: number, image: Express.Multer.File) {
     let imageType = image.mimetype.split("/")[1];
-    if (!this.imageSupportedTypes.includes(imageType))
-      throw new Error("image type not supported");
+    if (!this.imageSupportedTypes.includes(imageType)) throw new Error("image type not supported");
     let imageName =
-      image.originalname.split(".")[0] +
-      Date.now() +
-      crypto.randomBytes(12).toString("hex") +
-      "." +
-      imageType;
-    await this.fileStorageManager.writeFile(
-      userId,
-      subjectId,
-      noteId,
-      imageName,
-      image.buffer
-    );
+      image.originalname.split(".")[0] + Date.now() + crypto.randomBytes(12).toString("hex") + "." + imageType;
+    await this.fileStorageManager.writeFile(userId, subjectId, noteId, imageName, image.buffer);
   }
   async writeImages(
     userId: number,
@@ -50,28 +34,15 @@ class ImageManager {
     }
     await Promise.all(promises);
   }
-  async readImage(
-    userId: number,
-    subjectId: number,
-    noteId: number,
-    filename: string
-  ) {
-    if (!this.imageSupportedTypes.includes(filename.split(".")[1]))
-      throw new Error("image type not supported");
-    return await this.fileStorageManager.readFile(
-      userId,
-      subjectId,
-      noteId,
-      filename
-    );
+  async readImage(userId: number, subjectId: number, noteId: number, filename: string) {
+    if (!this.imageSupportedTypes.includes(filename.split(".")[1])) throw new Error("image type not supported");
+    return await this.fileStorageManager.readFile(userId, subjectId, noteId, filename);
   }
 
   async readImages(userId: number, subjectId: number, noteId: number) {
     try {
       let images = await fs.readdir(`storage/${userId}/${subjectId}/${noteId}`);
-      images = images.filter((image) =>
-        this.imageSupportedTypes.includes(image.split(".")[1])
-      );
+      images = images.filter((image) => this.imageSupportedTypes.includes(image.split(".")[1]));
       const promises: Promise<Buffer | undefined>[] = [];
       for (const image of images) {
         let readPromise = this.readImage(userId, subjectId, noteId, image);
@@ -84,27 +55,14 @@ class ImageManager {
     }
   }
 
-  async deleteImage(
-    userId: number,
-    subjectId: number,
-    noteId: number,
-    filename: string
-  ) {
-    if (!this.imageSupportedTypes.includes(filename.split(".")[1]))
-      throw new Error("image type not supported");
-    await this.fileStorageManager.deleteFile(
-      userId,
-      subjectId,
-      noteId,
-      filename
-    );
+  async deleteImage(userId: number, subjectId: number, noteId: number, filename: string) {
+    if (!this.imageSupportedTypes.includes(filename.split(".")[1])) throw new Error("image type not supported");
+    await this.fileStorageManager.deleteFile(userId, subjectId, noteId, filename);
   }
   async deleteImages(userId: number, subjectId: number, noteId: number) {
     try {
       let images = await fs.readdir(`storage/${userId}/${subjectId}/${noteId}`);
-      images = images.filter((image) =>
-        this.imageSupportedTypes.includes(image.split(".")[1])
-      );
+      images = images.filter((image) => this.imageSupportedTypes.includes(image.split(".")[1]));
       const promises: Promise<void>[] = [];
       for (const image of images) {
         let deletePromise = this.deleteImage(userId, subjectId, noteId, image);

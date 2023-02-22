@@ -1,7 +1,6 @@
-import queryString from "query-string";
 import dotenv from "dotenv";
-dotenv.config();
 import GithubClient from "./githubClient.js";
+dotenv.config();
 
 const githubClient = GithubClient.getInstance();
 

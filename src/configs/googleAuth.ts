@@ -1,4 +1,3 @@
-import queryString from "query-string";
 import dotenv from "dotenv";
 dotenv.config();
 import GoogleClient from "./googleClient.js";
