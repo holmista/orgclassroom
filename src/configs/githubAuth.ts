@@ -1,7 +1,9 @@
 import queryString from "query-string";
 import dotenv from "dotenv";
 dotenv.config();
-import githubClient from "./githubClient.js";
+import GithubClient from "./githubClient.js";
+
+const githubClient = GithubClient.getInstance();
 
 function setGithubAuthURL() {
   const githubLoginUrl = githubClient.generateAuthUrl();

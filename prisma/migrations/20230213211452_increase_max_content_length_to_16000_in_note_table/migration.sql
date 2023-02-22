@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Note` MODIFY `content` VARCHAR(16000) NOT NULL;

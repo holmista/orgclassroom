@@ -9,13 +9,25 @@ interface ITokens {
 }
 
 class GithubClient extends SocialClient {
-  constructor(
+  static instance: GithubClient;
+  private constructor(
     client_id: string,
     client_secret: string,
     redirect_uri: string,
     scope: string
   ) {
     super(client_id, client_secret, redirect_uri, scope);
+  }
+  static getInstance() {
+    if (!GithubClient.instance) {
+      GithubClient.instance = new GithubClient(
+        process.env.GITHUB_CLIENT_ID as string,
+        process.env.GITHUB_CLIENT_SECRET as string,
+        process.env.GITHUB_REDIRECT_URL as string,
+        "read:user user:email"
+      );
+    }
+    return GithubClient.instance;
   }
   generateAuthUrl() {
     const params = queryString.stringify({
@@ -77,11 +89,4 @@ class GithubClient extends SocialClient {
   }
 }
 
-const githubClient = new GithubClient(
-  process.env.GITHUB_CLIENT_ID as string,
-  process.env.GITHUB_CLIENT_SECRET as string,
-  process.env.GITHUB_REDIRECT_URL as string,
-  "read:user user:email"
-);
-
-export default githubClient;
+export default GithubClient;

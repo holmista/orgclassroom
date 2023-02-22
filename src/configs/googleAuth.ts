@@ -1,7 +1,9 @@
 import queryString from "query-string";
 import dotenv from "dotenv";
 dotenv.config();
-import googleClient from "./googleClient.js";
+import GoogleClient from "./googleClient.js";
+
+const googleClient = GoogleClient.getInstance();
 
 function setGoogleAuthURL() {
   const googleLoginUrl = googleClient.generateAuthUrl();
