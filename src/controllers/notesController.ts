@@ -68,7 +68,7 @@ export async function deleteNote(req: Request, res: Response) {
   await db.note.delete({
     where: { id: parseInt(req.params.noteId) },
   });
-  imageManager.deleteImages(
+  await fileStorageManager.deleteNoteFolder(
     user.id,
     parseInt(req.params.subjectId),
     parseInt(req.params.noteId)

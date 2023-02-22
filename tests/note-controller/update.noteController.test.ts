@@ -9,7 +9,6 @@ import createSubjectFactory from "../../prisma/factories/createSubjectFactory.js
 import createNoteFactory from "../../prisma/factories/createNoteFactory.js";
 import ImageManager from "../../lib/ImageManager.js";
 import FileStorageManager from "../../lib/fileStorageManager.js";
-import fs from "fs/promises";
 
 const imageManager = ImageManager.getInstance();
 const fileStorageManager = FileStorageManager.getInstance();
