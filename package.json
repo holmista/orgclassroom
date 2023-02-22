@@ -8,7 +8,8 @@
     "build": "tsc",
     "dev": "nodemon --exec ts-node-esm src/index.ts",
     "seed": "npx ts-node-esm prisma/seed.ts",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --verbose --coverage"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --verbose --coverage",
+    "lint": "npx prettier --write . && npx prisma format"
   },
   "keywords": [],
   "author": "",
