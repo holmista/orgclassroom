@@ -21,7 +21,7 @@ test("return access token if valid code is provided in get tokens", async () => 
 }, 10000);
 
 test("throw error if invalid access token is provided in get user info", async () => {
-  await expect(githubClient.getUser({ access_token: "12345" })).rejects.toThrow("Request failed with status code 401");
+  await expect(githubClient.getUser({ access_token: "12345" })).rejects.toThrow("could not get user data");
 });
 
 test("return user info if valid access token is provided in get user info", async () => {

@@ -5,12 +5,6 @@ import axios from "axios";
 import SocialClient from "../socialClient.js";
 import { type tokens } from "../socialClient.js";
 
-interface ITokens {
-  access_token: string;
-  refresh_token: string;
-  id_token: string;
-}
-
 class GoogleClient extends SocialClient {
   grant_type: string;
   static instance: GoogleClient;
@@ -52,7 +46,7 @@ class GoogleClient extends SocialClient {
     };
     return `${rootUrl}?${querystring.stringify(options)}`;
   }
-  async getTokens(code: string): Promise<ITokens | null> {
+  async getTokens(code: string): Promise<tokens> {
     try {
       const response = await axios.post("https://oauth2.googleapis.com/token", {
         code: code,
@@ -63,14 +57,13 @@ class GoogleClient extends SocialClient {
         scope: this.scope
       });
       const access_token: string = response.data.access_token;
-      const refresh_token: string = response.data.refresh_token;
       const id_token: string = response.data.id_token;
-      return { access_token, refresh_token, id_token };
-    } catch {
-      return null;
+      return { access_token, id_token };
+    } catch (e: any) {
+      throw new Error("The code passed is incorrect or expired");
     }
   }
-  async getUser(tokens: tokens): Promise<any | null> {
+  async getUser(tokens: tokens): Promise<any> {
     try {
       const response = await axios.get(
         `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${tokens.access_token}`,
@@ -82,7 +75,7 @@ class GoogleClient extends SocialClient {
       );
       return response.data;
     } catch {
-      return null;
+      throw new Error("could not get user data");
     }
   }
 }

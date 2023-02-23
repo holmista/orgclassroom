@@ -69,7 +69,7 @@ class GithubClient extends SocialClient {
       responseWoEmail.data.primary_email = primaryEmail;
       return responseWoEmail.data;
     } catch (err: any) {
-      throw new Error(err.message);
+      throw new Error("could not get user data");
     }
   }
 }
