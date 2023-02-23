@@ -4,11 +4,10 @@ import Session from "./session.js";
 import express from "express";
 import SocialClient from "./socialClient.js";
 import FileStorageManager from "./fileStorageManager.js";
-import { type tokens } from "./socialClient.js";
 
 const fileStorageManager = FileStorageManager.getInstance();
 
-type createUser = Omit<User, "id">;
+export type createUser = Omit<User, "id">;
 
 class SocialAuth {
   private code: string;
@@ -42,7 +41,7 @@ class SocialAuth {
 
   async createUser(user: createUser) {
     try {
-      if (!user) throw new Error("");
+      if (!user) throw new Error("user is empty");
       const userData = await db.user.findFirst({
         where: {
           email: user.email

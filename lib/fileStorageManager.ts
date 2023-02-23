@@ -62,9 +62,9 @@ class FileStorageManager {
   }
   private async createFolder(path: string) {
     try {
-      await fs.access(path);
       await fs.mkdir(path);
     } catch (error: any) {
+      if (error.code === "EEXIST") return;
       this.handleErrors(error);
     }
   }

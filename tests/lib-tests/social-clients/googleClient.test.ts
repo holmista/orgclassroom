@@ -35,8 +35,8 @@ test("return user info if valid access and id tokens are provided in get user in
   console.log(result);
   expect(result).toHaveProperty("email");
   expect(result).toHaveProperty("name");
-  expect(result).toHaveProperty("id");
+  expect(result).toHaveProperty("authProviderId");
   expect(result?.email).toBeTruthy();
   expect(result?.name).toBeTruthy();
-  expect(result?.id).toBeTruthy();
+  expect(result?.authProviderId).toBeTruthy();
 }, 15000);

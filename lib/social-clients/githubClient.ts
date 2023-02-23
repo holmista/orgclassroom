@@ -3,9 +3,9 @@ import queryString from "query-string";
 import axios from "axios";
 import SocialClient from "../socialClient.js";
 dotenv.config();
-import { type tokens } from "../socialClient.js";
+import { type tokens, ISocialClient, type socialUser } from "../socialClient.js";
 
-class GithubClient extends SocialClient {
+class GithubClient extends SocialClient implements ISocialClient {
   static instance: GithubClient;
   private constructor(client_id: string, client_secret: string, redirect_uri: string, scope: string) {
     super(client_id, client_secret, redirect_uri, scope);
@@ -57,7 +57,7 @@ class GithubClient extends SocialClient {
     }
   }
 
-  async getUser(tokens: tokens): Promise<any> {
+  async getUser(tokens: tokens): Promise<socialUser> {
     try {
       const responseWoEmail = await axios.get("https://api.github.com/user", {
         headers: { Authorization: `token ${tokens.access_token}` }
@@ -66,8 +66,12 @@ class GithubClient extends SocialClient {
         headers: { Authorization: `token ${tokens.access_token}` }
       });
       const primaryEmail: string = responseWEmail.data.filter((el: any) => el.primary)[0].email;
-      responseWoEmail.data.primary_email = primaryEmail;
-      return responseWoEmail.data;
+      return {
+        authProviderId: responseWoEmail.data.id as string,
+        name: responseWoEmail.data.login as string,
+        email: primaryEmail,
+        authProvider: "github"
+      };
     } catch (err: any) {
       throw new Error("could not get user data");
     }

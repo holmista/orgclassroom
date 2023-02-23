@@ -3,12 +3,16 @@ export type tokens = {
   id_token?: string;
 };
 
-type socialUser = {
+export type socialUser = {
   authProviderId: string;
   name: string;
   email: string;
   authProvider: string;
 };
+
+export interface ISocialClient {
+  getUser(tokens: tokens): Promise<socialUser>;
+}
 
 abstract class SocialClient {
   client_id: string;
@@ -22,8 +26,8 @@ abstract class SocialClient {
     this.scope = scope;
   }
   abstract generateAuthUrl(): string;
-  abstract getTokens(code: string): Promise<tokens | null>;
-  abstract getUser(tokens: tokens): Promise<socialUser | null>;
+  abstract getTokens(code: string): Promise<tokens>;
+  abstract getUser(tokens: tokens): Promise<any>;
 }
 
 export default SocialClient;

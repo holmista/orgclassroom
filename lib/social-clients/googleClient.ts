@@ -3,9 +3,9 @@ dotenv.config();
 import querystring from "query-string";
 import axios from "axios";
 import SocialClient from "../socialClient.js";
-import { type tokens } from "../socialClient.js";
+import { type tokens, ISocialClient, type socialUser } from "../socialClient.js";
 
-class GoogleClient extends SocialClient {
+class GoogleClient extends SocialClient implements ISocialClient {
   grant_type: string;
   static instance: GoogleClient;
   private constructor(
@@ -63,7 +63,7 @@ class GoogleClient extends SocialClient {
       throw new Error("The code passed is incorrect or expired");
     }
   }
-  async getUser(tokens: tokens): Promise<any> {
+  async getUser(tokens: tokens): Promise<socialUser> {
     try {
       const response = await axios.get(
         `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${tokens.access_token}`,
@@ -73,7 +73,12 @@ class GoogleClient extends SocialClient {
           }
         }
       );
-      return response.data;
+      return {
+        authProviderId: response.data.id,
+        email: response.data.email,
+        name: response.data.name,
+        authProvider: "google"
+      };
     } catch {
       throw new Error("could not get user data");
     }
