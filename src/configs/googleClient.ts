@@ -3,6 +3,7 @@ dotenv.config();
 import querystring from "query-string";
 import axios from "axios";
 import SocialClient from "../../lib/socialClient.js";
+import { type tokens } from "../../lib/socialClient.js";
 
 interface ITokens {
   access_token: string;
@@ -69,13 +70,13 @@ class GoogleClient extends SocialClient {
       return null;
     }
   }
-  async getUser(access_token: string, id_token: string): Promise<any | null> {
+  async getUser(tokens: tokens): Promise<any | null> {
     try {
       const response = await axios.get(
-        `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`,
+        `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${tokens.access_token}`,
         {
           headers: {
-            Authorization: `Bearer ${id_token}`
+            Authorization: `Bearer ${tokens.id_token}`
           }
         }
       );

@@ -62,6 +62,7 @@ class FileStorageManager {
   }
   private async createFolder(path: string) {
     try {
+      await fs.access(path);
       await fs.mkdir(path);
     } catch (error: any) {
       this.handleErrors(error);

@@ -3,6 +3,7 @@ import queryString from "query-string";
 import axios from "axios";
 import SocialClient from "../../lib/socialClient.js";
 dotenv.config();
+import { type tokens } from "../../lib/socialClient.js";
 
 interface ITokens {
   access_token: string;
@@ -37,7 +38,7 @@ class GithubClient extends SocialClient {
     return githubLoginUrl;
   }
 
-  async getTokens(code: string): Promise<ITokens | null> {
+  async getTokens(code: string): Promise<tokens | null> {
     try {
       const response = await axios.post(
         "https://github.com/login/oauth/access_token",
@@ -62,16 +63,16 @@ class GithubClient extends SocialClient {
     }
   }
 
-  async getUser(access_token: string): Promise<any | null> {
+  async getUser(tokens: tokens): Promise<any | null> {
     try {
       const responseWoEmail = await axios.get("https://api.github.com/user", {
         headers: {
-          Authorization: `token ${access_token}`
+          Authorization: `token ${tokens.access_token}`
         }
       });
       const responseWEmail = await axios.get("https://api.github.com/user/emails", {
         headers: {
-          Authorization: `token ${access_token}`
+          Authorization: `token ${tokens.access_token}`
         }
       });
       const primaryEmail: string = responseWEmail.data.filter((el: any) => el.primary)[0].email;
