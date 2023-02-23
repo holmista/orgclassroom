@@ -1,8 +1,8 @@
 import type express from "express";
 import SocialAuth from "../../lib/socialAuth.js";
 import type SocialClient from "../../lib/socialClient.js";
-import GoogleClient from "../configs/googleClient.js";
-import GithubClient from "../configs/githubClient.js";
+import GoogleClient from "../../lib/social-clients/googleClient.js";
+import GithubClient from "../../lib/social-clients/githubClient.js";
 import dotenv from "dotenv";
 dotenv.config();
 

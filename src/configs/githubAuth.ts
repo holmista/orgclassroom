@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import GithubClient from "./githubClient.js";
+import GithubClient from "../../lib/social-clients/githubClient.js";
 dotenv.config();
 
 const githubClient = GithubClient.getInstance();

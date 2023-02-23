@@ -1,8 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
-import GoogleClient from "../configs/googleClient.js";
-import GithubClient from "../configs/githubClient.js";
+import GoogleClient from "../../lib/social-clients/googleClient.js";
+import GithubClient from "../../lib/social-clients/githubClient.js";
 import { loginWithGithub, loginWithGoogle, logout } from "../controllers/authController.js";
 
 const router = express.Router();

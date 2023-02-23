@@ -8,5 +8,5 @@
     "esModuleInterop": true,
     "strict": true
   },
-  "include": ["src/**/*", "lib/socialClient.ts", "lib/socialClient.ts"]
+  "include": ["src/**/*", "lib/socialClient.ts", "lib/socialClient.ts", "lib/social-clients/githubClient.ts", "lib/social-clients/githubClient.ts", "lib/social-clients/googleClient.ts", "lib/social-clients/googleClient.ts"]
 }

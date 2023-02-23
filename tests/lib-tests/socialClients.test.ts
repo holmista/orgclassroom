@@ -2,8 +2,8 @@ import { test, expect, jest } from "@jest/globals";
 import getGoogleCodePuppeteer from "../../src/helpers/getGoogleCodePuppeteer.js";
 import getGithubCodePuppeteer from "../../src/helpers/getGithubcodePuppeteer.js";
 
-import GoogleClient from "../../src/configs/googleClient.js";
-import GithubClient from "../../src/configs/githubClient.js";
+import GoogleClient from "../../lib/social-clients/googleClient.js";
+import GithubClient from "../../lib/social-clients/githubClient.js";
 jest.setTimeout(10000);
 
 const googleClient = GoogleClient.getInstance();
