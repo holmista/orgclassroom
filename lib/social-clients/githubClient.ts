@@ -67,7 +67,7 @@ class GithubClient extends SocialClient implements ISocialClient {
       });
       const primaryEmail: string = responseWEmail.data.filter((el: any) => el.primary)[0].email;
       return {
-        authProviderId: responseWoEmail.data.id as string,
+        authProviderId: String(responseWoEmail.data.id),
         name: responseWoEmail.data.login as string,
         email: primaryEmail,
         authProvider: "github"

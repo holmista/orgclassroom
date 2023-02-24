@@ -32,7 +32,6 @@ test("return user info if valid access and id tokens are provided in get user in
   const code = await getGoogleCodePuppeteer();
   const tokens = await googleClient.getTokens(code);
   const result = await googleClient.getUser(tokens);
-  console.log(result);
   expect(result).toHaveProperty("email");
   expect(result).toHaveProperty("name");
   expect(result).toHaveProperty("authProviderId");

@@ -5,6 +5,7 @@ import clearDatabase from "../../src/helpers/clearDatabase.js";
 import createUser from "../../prisma/factories/createUserFactory.js";
 import createSubject from "../../prisma/factories/createSubjectFactory.js";
 import createSession from "../../prisma/factories/createSessionFactory.js";
+import fs from "fs/promises";
 
 clearDatabase();
 const api = supertest(app);
@@ -35,7 +36,7 @@ test("return error when deleting subject with invalid id", async () => {
   const user = await createUser();
   const session = await createSession(user.id);
   const res = await agent.delete("/subjects/invalid").set("Cookie", [`token=${session.sessionToken}`]);
-  expect(res.statusCode).toBe(404);
+  expect(res.statusCode).toBe(400);
   expect(res.body).toHaveProperty("message");
   expect(res.body.message).toBe("Invalid id");
 });
@@ -62,10 +63,14 @@ test("return error when deleting subject with id that does not belong to user", 
 
 test("return success when deleting subject with valid id", async () => {
   const user = await createUser();
+  await fs.mkdir(`storage/${user.id}`);
   const session = await createSession(user.id);
   const subject = await createSubject(user.id, "1400", "1500", "test");
+  await fs.mkdir(`storage/${user.id}/${subject.id}`);
   const res = await agent.delete(`/subjects/${subject.id}`).set("Cookie", [`token=${session.sessionToken}`]);
   expect(res.statusCode).toBe(204);
+  const files = await fs.readdir(`storage/${user.id}`);
+  expect(files).toHaveLength(0);
 });
 
 beforeEach(async () => {

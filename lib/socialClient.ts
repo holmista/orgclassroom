@@ -27,7 +27,7 @@ abstract class SocialClient {
   }
   abstract generateAuthUrl(): string;
   abstract getTokens(code: string): Promise<tokens>;
-  abstract getUser(tokens: tokens): Promise<any>;
+  abstract getUser(tokens: tokens): Promise<socialUser>;
 }
 
 export default SocialClient;

@@ -4,6 +4,8 @@ import app from "../../src/index.js";
 import clearDatabase from "../../src/helpers/clearDatabase.js";
 import createUser from "../../prisma/factories/createUserFactory.js";
 import createSession from "../../prisma/factories/createSessionFactory.js";
+import emptyDir from "../../src/helpers/emptyDir.js";
+import fs from "fs/promises";
 
 clearDatabase();
 const api = supertest(app);
@@ -94,6 +96,7 @@ test("return error when creating subject with start time greater than end time",
 
 test("successfully create subject with valid body", async () => {
   const user = await createUser();
+  await fs.mkdir(`storage/${user.id}`);
   const session = await createSession(user.id);
   const res = await agent
     .post("/subjects")
@@ -110,8 +113,11 @@ test("successfully create subject with valid body", async () => {
   expect(res.body.subject.startTime).toBe("1400");
   expect(res.body.subject.endTime).toBe("1500");
   expect(res.body.subject.title).toBe("test");
-});
+  const files = await fs.readdir(`storage/${user.id}`);
+  expect(files.length).toBe(1);
+}, 10000);
 
 beforeEach(async () => {
   await clearDatabase();
+  await emptyDir();
 });

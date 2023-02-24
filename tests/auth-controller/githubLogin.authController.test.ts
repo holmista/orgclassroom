@@ -2,7 +2,8 @@ import supertest from "supertest";
 import { test, expect, beforeEach } from "@jest/globals";
 import app from "../../src/index.js";
 import getGithubCodePuppeteer from "../../src/helpers/getGithubcodePuppeteer.js";
-import db from "../../lib/database.js";
+import clearDatabase from "../../src/helpers/clearDatabase.js";
+import emptyDir from "../../src/helpers/emptyDir.js";
 
 const api = supertest(app);
 const agent = supertest.agent(app);
@@ -28,7 +29,7 @@ test("do not login user if invalid code is provided github", async () => {
   expect(res.headers["content-type"]).toBe("application/json; charset=utf-8");
   expect(res.statusCode).toBe(500);
   expect(res.body).toHaveProperty("message");
-  expect(res.body.message).toBe("Something went wrong");
+  expect(res.body.message).toBe("The code passed is incorrect or expired.");
 });
 
 test("login user if valid code is provided github", async () => {
@@ -36,6 +37,12 @@ test("login user if valid code is provided github", async () => {
   const res = await api.post("/auth/login/github").send({
     code
   });
+  console.log(res.body);
   expect(res.statusCode).toBe(200);
   expect(res.header["set-cookie"][0]).toMatch(/token/);
 }, 10000);
+
+beforeEach(async () => {
+  await clearDatabase();
+  await emptyDir();
+});

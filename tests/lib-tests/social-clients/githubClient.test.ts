@@ -28,7 +28,6 @@ test("return user info if valid access token is provided in get user info", asyn
   const code = await getGithubCodePuppeteer();
   const tokens = await githubClient.getTokens(code);
   const result = await githubClient.getUser(tokens);
-  console.log(result);
   expect(result).toHaveProperty("email");
   expect(result).toHaveProperty("name");
   expect(result).toHaveProperty("authProviderId");

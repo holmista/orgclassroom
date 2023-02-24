@@ -12,9 +12,9 @@ test("return error if path not found when writing a file", async () => {
 });
 
 test("write file if path found when writing a file", async () => {
-  await fs.mkdir("storage/1/1", { recursive: true });
+  await fs.mkdir("storage/1/1/1", { recursive: true });
   await expect(fileStorageManager.writeFile(1, 1, 1, "test.txt", Buffer.from("test"))).resolves.toBeUndefined();
-  await expect(fs.access("storage/1/1/test.txt")).resolves.toBeUndefined();
+  await expect(fs.readFile("storage/1/1/1/test.txt")).resolves.toEqual(Buffer.from("test"));
 });
 
 test("return error if path not found when reading a file", async () => {
@@ -49,9 +49,12 @@ test("delete file if path found when deleting a file", async () => {
   await expect(fs.access("storage/1/1/1/test.txt")).rejects.toThrow("no such file or directory");
 });
 
-test("throw error if folder already exists when creating a user folder", async () => {
+test("do not recreate a folder if it already exists when creating a user folder", async () => {
   await fs.mkdir("storage/1", { recursive: true });
-  await expect(fileStorageManager.createUserFolder(1)).rejects.toThrow("folder already exists");
+  await fs.writeFile("storage/1/test.txt", Buffer.from("test"));
+  await expect(fileStorageManager.createUserFolder(1)).resolves.toBeUndefined();
+  const amount = await fs.readdir("storage/1");
+  expect(amount.length).toBe(1);
 });
 
 test("throw error when deleting a user folder that does not exist", async () => {
@@ -67,9 +70,12 @@ test("delete folder when deleting a user folder which exists", async () => {
   await expect(fileStorageManager.deleteUserFolder(1)).resolves.toBeUndefined();
 });
 
-test("throw error if folder already exists when creating a subject folder", async () => {
+test("do not recreate a folder if it already exists when creating a subject folder", async () => {
   await fs.mkdir("storage/1/1", { recursive: true });
-  await expect(fileStorageManager.createSubjectFolder(1, 1)).rejects.toThrow("folder already exists");
+  await fs.writeFile("storage/1/1/test.txt", Buffer.from("test"));
+  await expect(fileStorageManager.createSubjectFolder(1, 1)).resolves.toBeUndefined();
+  const amount = await fs.readdir("storage/1/1");
+  expect(amount.length).toBe(1);
 });
 
 test("throw error when creating a subject folder and user folder does not exist", async () => {
