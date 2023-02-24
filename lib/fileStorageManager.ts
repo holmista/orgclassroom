@@ -64,6 +64,7 @@ class FileStorageManager {
     try {
       await fs.mkdir(path);
     } catch (error: any) {
+      if (error.code === "EEXIST") return;
       this.handleErrors(error);
     }
   }

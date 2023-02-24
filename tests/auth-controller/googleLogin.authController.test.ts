@@ -1,7 +1,10 @@
 import supertest from "supertest";
 import { test, expect, beforeEach, jest } from "@jest/globals";
 import app from "../../src/index.js";
+import emptyDir from "../../src/helpers/emptyDir.js";
+import clearDatabase from "../../src/helpers/clearDatabase.js";
 import getGoogleCodePuppeteer from "../../src/helpers/getGoogleCodePuppeteer.js";
+import fs from "fs/promises";
 
 const api = supertest(app);
 
@@ -26,7 +29,7 @@ test("do not login user if invalid code is provided google", async () => {
   expect(res.headers["content-type"]).toBe("application/json; charset=utf-8");
   expect(res.statusCode).toBe(500);
   expect(res.body).toHaveProperty("message");
-  expect(res.body.message).toBe("Something went wrong");
+  expect(res.body.message).toBe("The code passed is incorrect or expired");
 });
 
 test("login user if valid code is provided google", async () => {
@@ -35,5 +38,12 @@ test("login user if valid code is provided google", async () => {
     code
   });
   expect(res.statusCode).toBe(200);
+  const files = await fs.readdir("storage");
+  expect(files.length).toBe(1);
   expect(res.header["set-cookie"][0]).toMatch(/token/);
 }, 10000);
+
+beforeEach(async () => {
+  await clearDatabase();
+  await emptyDir();
+});

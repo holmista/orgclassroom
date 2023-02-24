@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-import GoogleClient from "./googleClient.js";
+import GoogleClient from "../../lib/social-clients/googleClient.js";
 
 const googleClient = GoogleClient.getInstance();
 

@@ -44,11 +44,11 @@ async function getGithubCode(): Promise<string> {
     //   }
     const url = page.url();
     const parsedUrl = queryString.parseUrl(url);
-    browser.close();
     return parsedUrl.query.code as string;
   } catch (err) {
-    browser.close();
     throw err;
+  } finally {
+    browser.close();
   }
 }
 

@@ -7,15 +7,12 @@ import FileStorageManager from "./fileStorageManager.js";
 
 const fileStorageManager = FileStorageManager.getInstance();
 
-type createUser = Omit<User, "id">;
-export type tokens = {
-  access_token: string;
-  id_token?: string;
-};
+export type createUser = Omit<User, "id">;
 
-abstract class Auth {
-  code: string;
-  static cookieOptions: express.CookieOptions = {
+class SocialAuth {
+  private code: string;
+  private socialClient: SocialClient;
+  static readonly cookieOptions: express.CookieOptions = {
     domain: process.env.FRONT_TOP_LEVEL_DOMAIN,
     path: "/",
     httpOnly: true,
@@ -23,14 +20,17 @@ abstract class Auth {
     sameSite: "strict",
     maxAge: Number(process.env.SESSION_EXPIRES_IN)
   };
-  constructor(code: string) {
+  constructor(code: string, client: SocialClient) {
     this.code = code;
+    this.socialClient = client;
   }
-  async login(client: SocialClient) {
+  async login() {
     try {
-      const tokens = (await client.getTokens(this.code)) as tokens;
-      if (!tokens) throw new Error("Something went wrong");
-      const user = await this.getUserData(tokens);
+      const tokens = await this.socialClient.getTokens(this.code);
+      if (!tokens) throw new Error("could not get user tokens");
+      const userData = await this.socialClient.getUser(tokens);
+      if (!userData) throw new Error("could not get user data");
+      const user = await this.createUser(userData);
       await fileStorageManager.createUserFolder(user.id);
       const sessionToken = await this.createSession(user);
       return sessionToken;
@@ -39,10 +39,9 @@ abstract class Auth {
     }
   }
 
-  abstract getUserData(tokens: tokens): Promise<User>;
-
   async createUser(user: createUser) {
     try {
+      if (!user) throw new Error("user is empty");
       const userData = await db.user.findFirst({
         where: {
           email: user.email
@@ -88,4 +87,4 @@ abstract class Auth {
   }
 }
 
-export default Auth;
+export default SocialAuth;

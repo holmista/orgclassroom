@@ -2,15 +2,10 @@ import dotenv from "dotenv";
 dotenv.config();
 import querystring from "query-string";
 import axios from "axios";
-import SocialClient from "../../lib/socialClient.js";
+import SocialClient from "../socialClient.js";
+import { type tokens, ISocialClient, type socialUser } from "../socialClient.js";
 
-interface ITokens {
-  access_token: string;
-  refresh_token: string;
-  id_token: string;
-}
-
-class GoogleClient extends SocialClient {
+class GoogleClient extends SocialClient implements ISocialClient {
   grant_type: string;
   static instance: GoogleClient;
   private constructor(
@@ -51,7 +46,7 @@ class GoogleClient extends SocialClient {
     };
     return `${rootUrl}?${querystring.stringify(options)}`;
   }
-  async getTokens(code: string): Promise<ITokens | null> {
+  async getTokens(code: string): Promise<tokens> {
     try {
       const response = await axios.post("https://oauth2.googleapis.com/token", {
         code: code,
@@ -62,26 +57,30 @@ class GoogleClient extends SocialClient {
         scope: this.scope
       });
       const access_token: string = response.data.access_token;
-      const refresh_token: string = response.data.refresh_token;
       const id_token: string = response.data.id_token;
-      return { access_token, refresh_token, id_token };
-    } catch {
-      return null;
+      return { access_token, id_token };
+    } catch (e: any) {
+      throw new Error("The code passed is incorrect or expired");
     }
   }
-  async getUser(access_token: string, id_token: string): Promise<any | null> {
+  async getUser(tokens: tokens): Promise<socialUser> {
     try {
       const response = await axios.get(
-        `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`,
+        `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${tokens.access_token}`,
         {
           headers: {
-            Authorization: `Bearer ${id_token}`
+            Authorization: `Bearer ${tokens.id_token}`
           }
         }
       );
-      return response.data;
+      return {
+        authProviderId: response.data.id,
+        email: response.data.email,
+        name: response.data.name,
+        authProvider: "google"
+      };
     } catch {
-      return null;
+      throw new Error("could not get user data");
     }
   }
 }
