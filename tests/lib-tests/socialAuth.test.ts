@@ -57,6 +57,16 @@ test("delete session when logging out", async () => {
   expect(amount).toBe(0);
 });
 
+test("throw error when logging in user and code is invalid", () => {
+  const socialAuth = new SocialAuth("invalid", SocialClientMock.getInstance());
+  expect(socialAuth.login()).rejects.toThrow("The code passed is incorrect or expired");
+});
+
+test("throw error when logging in user and tokens are invalid", () => {
+  const socialAuth = new SocialAuth("returnInvalidToken", SocialClientMock.getInstance());
+  expect(socialAuth.login()).rejects.toThrow("could not get user data");
+});
+
 test("log in a user", async () => {
   await expect(socialAuth.login()).resolves.toBeTruthy();
   const folders = await fs.readdir("./storage");

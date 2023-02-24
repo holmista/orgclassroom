@@ -16,9 +16,20 @@ export default class SocialClientMock extends SocialClient {
     return "https://mock.com";
   }
   async getTokens(code: string): Promise<tokens> {
-    return { access_token: "mock", id_token: "mock" };
+    try {
+      if (code === "invalid") throw new Error("invalid code");
+      if (code === "returnInvalidToken") return { access_token: "invalid", id_token: "invalid" };
+      return { access_token: "mock", id_token: "mock" };
+    } catch (e: any) {
+      throw new Error("The code passed is incorrect or expired");
+    }
   }
   async getUser(tokens: tokens): Promise<any> {
-    return { authProviderId: "mock", name: "mock", email: "mock@gmail.com", authProvider: "mock" };
+    try {
+      if (tokens.access_token === "invalid") throw new Error("could not get user data");
+      return { authProviderId: "mock", name: "mock", email: "mock@gmail.com", authProvider: "mock" };
+    } catch (e: any) {
+      throw new Error("could not get user data");
+    }
   }
 }
