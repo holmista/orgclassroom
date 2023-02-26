@@ -1,11 +1,14 @@
 import { Router } from "express";
-import filesAuthorization from "../middlewares/authorization/filesAuthorization.js";
+import {
+  authorizeGetNoteFile,
+  authorizeCreateDeleteNoteFile
+} from "../middlewares/authorization/filesAuthorization.js";
 import { getFile, createNoteFile, deleteNoteFile } from "../controllers/fileController.js";
 
 const router = Router();
 
-router.get("/:userId/:subjectId/:noteId/:fileName", filesAuthorization, getFile);
-router.post("/:subjectId/:noteId", filesAuthorization, createNoteFile);
-router.delete("/:subjectId/:noteId/:imageName", filesAuthorization, deleteNoteFile);
+router.get("/:subjectId/:noteId/:fileName", authorizeGetNoteFile, getFile);
+router.post("/:subjectId/:noteId", authorizeCreateDeleteNoteFile, createNoteFile);
+router.delete("/:subjectId/:noteId/:fileName", authorizeCreateDeleteNoteFile, deleteNoteFile);
 
 export default router;

@@ -26,11 +26,13 @@ export async function getFile(req: Request, res: Response) {
 
 export async function createNoteFile(req: Request, res: Response) {
   const user = req.user as User;
+  const files = req.files as Express.Multer.File[];
   await staticFileManager.writeFile(
     user.id,
     parseInt(req.params.subjectId),
     parseInt(req.params.noteId),
-    req.file as Express.Multer.File
+    // req.files as Express.Multer.File[]
+    files[0]
   );
   res.status(201).end();
 }

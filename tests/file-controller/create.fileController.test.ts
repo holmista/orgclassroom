@@ -12,11 +12,11 @@ import fs from "fs/promises";
 const api = supertest(app);
 const agent = supertest.agent(app);
 
-test("return error when reading file without authentication", async () => {
+test("return error when creating file without authentication", async () => {
   await api.post("/file/1/1/1/huhuhu").expect(401);
 });
 
-test("return error when reading file with invalid subject id", async () => {
+test("return error when creating file with invalid subject id", async () => {
   const user = await createUser();
   const session = await createSession(user.id);
   const res = await agent.get("/file/invalid/1/huhuhu").set("Cookie", `token=${session.sessionToken}`);
@@ -24,42 +24,56 @@ test("return error when reading file with invalid subject id", async () => {
   expect(res.body.message).toBe("Invalid file path");
 });
 
-test("return error when reading file of another user", async () => {
+test("return error when creating file on note of another user", async () => {
   const user1 = await createUser();
-  await fs.mkdir(`storage/${user1.id}/1/1`, { recursive: true });
-  const user2 = await createUser("user2@gmail.com", "user2", "google", "dsfjfs");
-  await fs.mkdir(`storage/${user2.id}/2/2`, { recursive: true });
-  await fs.writeFile(`storage/${user2.id}/2/2/huhuhu.png`, "huhuhu");
+  const user2 = await createUser("user2", "user2", "google", "dsfjfs");
   const subject = await createSubject(user2.id);
   const note = await createNote(subject.id);
   const session = await createSession(user1.id);
   const res = await agent
-    .get(`/file/${subject.id}/${note.id}/huhuhu.png`)
-    .set("Cookie", `token=${session.sessionToken}`);
+    .post(`/file/${subject.id}/${note.id}`)
+    .set("Cookie", `token=${session.sessionToken}`)
+    .attach("note-files", "tests/test-images/test.png");
   expect(res.status).toBe(403);
   expect(res.body.message).toBe("Forbidden");
 });
 
-test("return error when reading file which does not exist", async () => {
+test("return error when creating file on note which does not exist", async () => {
   const user = await createUser();
   const session = await createSession(user.id);
-  const res = await agent.get(`/file/1/1/huhuhu.png`).set("Cookie", `token=${session.sessionToken}`);
+  const res = await agent
+    .post(`/file/1/1`)
+    .set("Cookie", `token=${session.sessionToken}`)
+    .attach("note-files", "tests/test-images/test.png");
   expect(res.status).toBe(404);
   expect(res.body.message).toBe("Invalid file path");
 });
 
-test("return file when reading file", async () => {
+test("return error when creating file on subject which does not exist", async () => {
   const user = await createUser();
+  const session = await createSession(user.id);
+  const res = await agent
+    .post(`/file/1/1`)
+    .set("Cookie", `token=${session.sessionToken}`)
+    .attach("note-files", "tests/test-images/test.png");
+  expect(res.status).toBe(404);
+  expect(res.body.message).toBe("Invalid file path");
+});
+
+test("create file", async () => {
+  const user = await createUser();
+  const session = await createSession(user.id);
   const subject = await createSubject(user.id);
   const note = await createNote(subject.id);
   await fs.mkdir(`storage/${user.id}/${subject.id}/${note.id}`, { recursive: true });
-  await fs.writeFile(`storage/${user.id}/${subject.id}/${note.id}/huhuhu.png`, "huhuhu");
-  const session = await createSession(user.id);
   const res = await agent
-    .get(`/file/${subject.id}/${note.id}/huhuhu.png`)
-    .set("Cookie", `token=${session.sessionToken}`);
-  expect(res.status).toBe(200);
-  expect(res.body).toBeTruthy();
+    .post(`/file/${subject.id}/${note.id}`)
+    .set("Cookie", `token=${session.sessionToken}`)
+    .attach("note-files", "tests/test-images/test.png", {
+      filename: "test.png",
+      contentType: "image/png"
+    });
+  expect(res.status).toBe(201);
 });
 
 beforeEach(async () => {
