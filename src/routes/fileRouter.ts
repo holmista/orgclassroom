@@ -4,6 +4,6 @@ import getFile from "../controllers/fileController.js";
 
 const router = Router();
 
-router.get("/:subjectId/:noteId/:fileName", filesAuthorization, getFile);
+router.get("/:userId/:subjectId/:noteId/:fileName", filesAuthorization, getFile);
 
 export default router;

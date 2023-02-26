@@ -4,9 +4,10 @@ import db from "../../../lib/database.js";
 
 export default async function authorizeGetNode(req: Request, res: Response, next: NextFunction) {
   const user = req.user as User;
-  const { subjectId, noteId } = req.params;
-  if (isNaN(parseInt(subjectId)) || isNaN(parseInt(noteId)))
+  const { userId, subjectId, noteId } = req.params;
+  if (isNaN(parseInt(userId)) || isNaN(parseInt(subjectId)) || isNaN(parseInt(noteId)))
     return res.status(400).json({ message: "Invalid file path" });
+  if (parseInt(userId) !== user.id) return res.status(403).json({ message: "Forbidden" });
   const note = await db.note.findUnique({
     where: { id: parseInt(noteId) },
     include: { subject: true }
