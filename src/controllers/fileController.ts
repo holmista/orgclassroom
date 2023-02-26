@@ -1,8 +1,10 @@
 import { type Request, type Response } from "express";
 import { type User } from "@prisma/client";
 import FileStorageManager from "../../lib/fileStorageManager.js";
+import StaticFileManager from "../../lib/StaticFileManager.js";
 
 const fileStorageManager = FileStorageManager.getInstance();
+const staticFileManager = StaticFileManager.getInstance();
 
 const mimeTypes = new Map<string, string>();
 mimeTypes.set("png", "image/png");
@@ -10,7 +12,7 @@ mimeTypes.set("jpg", "image/jpeg");
 mimeTypes.set("jpeg", "image/jpeg");
 mimeTypes.set("pdf", "application/pdf");
 
-export default async function getFile(req: Request, res: Response) {
+export async function getFile(req: Request, res: Response) {
   const user = req.user as User;
   const { subjectId, noteId, fileName } = req.params;
   const extension = fileName.split(".").pop();
@@ -20,4 +22,26 @@ export default async function getFile(req: Request, res: Response) {
   res.setHeader("Content-Type", mimeTypes.get(extension) as string);
   res.setHeader("content-length", file.length);
   res.status(200).send(file);
+}
+
+export async function createNoteFile(req: Request, res: Response) {
+  const user = req.user as User;
+  await staticFileManager.writeFile(
+    user.id,
+    parseInt(req.params.subjectId),
+    parseInt(req.params.noteId),
+    req.file as Express.Multer.File
+  );
+  res.status(201).end();
+}
+
+export async function deleteNoteFile(req: Request, res: Response) {
+  const user = req.user as User;
+  await staticFileManager.deleteFile(
+    user.id,
+    parseInt(req.params.subjectId),
+    parseInt(req.params.noteId),
+    req.params.imageName
+  );
+  res.status(204).end();
 }
