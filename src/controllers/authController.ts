@@ -6,12 +6,14 @@ import GithubClient from "../../lib/social-clients/githubClient.js";
 import dotenv from "dotenv";
 dotenv.config();
 
+const googleAuth = new SocialAuth(GoogleClient.getInstance());
+const githubAuth = new SocialAuth(GithubClient.getInstance());
+
 async function loginWithGoogle(req: express.Request, res: express.Response, client: SocialClient) {
   try {
     const code = req.body.code as string;
     if (!code) return res.status(400).json({ message: "No code provided" });
-    const socialAuth = new SocialAuth(code, GoogleClient.getInstance());
-    const sessionToken = await socialAuth.login();
+    const sessionToken = await googleAuth.login(code);
     res.status(200).cookie("token", sessionToken, SocialAuth.cookieOptions).end();
   } catch (err: any) {
     res.status(500).json({ message: err.message });
@@ -22,8 +24,7 @@ async function loginWithGithub(req: express.Request, res: express.Response, clie
   try {
     const code = req.body.code;
     if (!code) return res.status(400).json({ message: "No code provided" });
-    const socialAuth = new SocialAuth(code, GithubClient.getInstance());
-    const sessionToken = await socialAuth.login();
+    const sessionToken = await githubAuth.login(code);
     res.status(200).cookie("token", sessionToken, SocialAuth.cookieOptions).end();
   } catch (err: any) {
     res.status(500).json({ message: err.message });

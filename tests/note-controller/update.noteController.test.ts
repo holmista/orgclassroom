@@ -7,11 +7,6 @@ import createUser from "../../prisma/factories/createUserFactory.js";
 import createSession from "../../prisma/factories/createSessionFactory.js";
 import createSubjectFactory from "../../prisma/factories/createSubjectFactory.js";
 import createNoteFactory from "../../prisma/factories/createNoteFactory.js";
-import ImageManager from "../../lib/ImageManager.js";
-import FileStorageManager from "../../lib/fileStorageManager.js";
-
-const imageManager = ImageManager.getInstance();
-const fileStorageManager = FileStorageManager.getInstance();
 
 clearDatabase();
 const api = supertest(app);

@@ -7,7 +7,7 @@ import db from "../../lib/database.js";
 import createUser from "../../prisma/factories/createUserFactory.js";
 import fs from "fs/promises";
 
-const socialAuth = new SocialAuth("mock", SocialClientMock.getInstance());
+const socialAuth = new SocialAuth(SocialClientMock.getInstance());
 
 test("create a user if it already does not exist", async () => {
   await expect(
@@ -58,17 +58,15 @@ test("delete session when logging out", async () => {
 });
 
 test("throw error when logging in user and code is invalid", () => {
-  const socialAuth = new SocialAuth("invalid", SocialClientMock.getInstance());
-  expect(socialAuth.login()).rejects.toThrow("The code passed is incorrect or expired");
+  expect(socialAuth.login("invalid")).rejects.toThrow("The code passed is incorrect or expired");
 });
 
 test("throw error when logging in user and tokens are invalid", () => {
-  const socialAuth = new SocialAuth("returnInvalidToken", SocialClientMock.getInstance());
-  expect(socialAuth.login()).rejects.toThrow("could not get user data");
+  expect(socialAuth.login("returnInvalidToken")).rejects.toThrow("could not get user data");
 });
 
 test("log in a user", async () => {
-  await expect(socialAuth.login()).resolves.toBeTruthy();
+  await expect(socialAuth.login("mock")).resolves.toBeTruthy();
   const folders = await fs.readdir("./storage");
   expect(folders.length).toBe(1);
   const userAmount = await db.user.count();

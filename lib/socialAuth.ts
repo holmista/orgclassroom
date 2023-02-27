@@ -10,7 +10,6 @@ const fileStorageManager = FileStorageManager.getInstance();
 export type createUser = Omit<User, "id">;
 
 class SocialAuth {
-  private code: string;
   private socialClient: SocialClient;
   static readonly cookieOptions: express.CookieOptions = {
     domain: process.env.FRONT_TOP_LEVEL_DOMAIN,
@@ -20,13 +19,12 @@ class SocialAuth {
     sameSite: "strict",
     maxAge: Number(process.env.SESSION_EXPIRES_IN)
   };
-  constructor(code: string, client: SocialClient) {
-    this.code = code;
+  constructor(client: SocialClient) {
     this.socialClient = client;
   }
-  async login() {
+  async login(code: string) {
     try {
-      const tokens = await this.socialClient.getTokens(this.code);
+      const tokens = await this.socialClient.getTokens(code);
       if (!tokens) throw new Error("could not get user tokens");
       const userData = await this.socialClient.getUser(tokens);
       if (!userData) throw new Error("could not get user data");

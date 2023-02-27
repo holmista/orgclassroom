@@ -6,11 +6,9 @@ import emptyDir from "../../src/helpers/emptyDir";
 import createUser from "../../prisma/factories/createUserFactory.js";
 import createSession from "../../prisma/factories/createSessionFactory.js";
 import createSubjectFactory from "../../prisma/factories/createSubjectFactory.js";
-import ImageManager from "../../lib/ImageManager.js";
 import FileStorageManager from "../../lib/fileStorageManager.js";
 import fs from "fs/promises";
 
-const imageManager = ImageManager.getInstance();
 const fileStorageManager = FileStorageManager.getInstance();
 
 clearDatabase();

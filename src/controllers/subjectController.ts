@@ -2,10 +2,10 @@ import { type Request, type Response } from "express";
 import db from "../../lib/database.js";
 import { type CreateSubject } from "../middlewares/data-validation/subjects/schemas.js";
 import { type User, type Subject, type Note } from "@prisma/client";
-import ImageManager from "../../lib/ImageManager.js";
+import StaticFileManager from "../../lib/StaticFileManager.js";
 import FileStorageManager from "../../lib/fileStorageManager.js";
 
-const imageManager = ImageManager.getInstance();
+const staticFileManager = StaticFileManager.getInstance();
 const fileStorageManager = FileStorageManager.getInstance();
 
 interface INoteWithFiles extends Note {
@@ -32,7 +32,7 @@ export async function getSubject(req: Request, res: Response) {
     }
   })) as ISubjectWithNotes;
   for (let i = 0; i < subject.Note.length; i++) {
-    const noteFiles = await imageManager.readImages(subject.userId, subject.id, subject.Note[i].id);
+    const noteFiles = await staticFileManager.readFiles(subject.userId, subject.id, subject.Note[i].id);
     subject.Note[i].files = noteFiles;
   }
   res.status(200).json({ subject });
