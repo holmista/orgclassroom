@@ -50,7 +50,7 @@ class StaticFileManager {
   }
 
   async deleteFile(userId: number, subjectId: number, noteId: number, filename: string) {
-    if (!this.imageSupportedTypes.includes(filename.split(".")[1])) throw new Error("image type not supported");
+    console.log(userId, subjectId, noteId, filename);
     await this.fileStorageManager.deleteFile(userId, subjectId, noteId, filename);
   }
   async deleteFiles(userId: number, subjectId: number, noteId: number) {

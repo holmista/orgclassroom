@@ -27,13 +27,7 @@ export async function getFile(req: Request, res: Response) {
 export async function createNoteFile(req: Request, res: Response) {
   const user = req.user as User;
   const files = req.files as Express.Multer.File[];
-  await staticFileManager.writeFile(
-    user.id,
-    parseInt(req.params.subjectId),
-    parseInt(req.params.noteId),
-    // req.files as Express.Multer.File[]
-    files[0]
-  );
+  await staticFileManager.writeFile(user.id, parseInt(req.params.subjectId), parseInt(req.params.noteId), files[0]);
   res.status(201).end();
 }
 
@@ -43,7 +37,7 @@ export async function deleteNoteFile(req: Request, res: Response) {
     user.id,
     parseInt(req.params.subjectId),
     parseInt(req.params.noteId),
-    req.params.imageName
+    req.params.fileName
   );
   res.status(204).end();
 }
