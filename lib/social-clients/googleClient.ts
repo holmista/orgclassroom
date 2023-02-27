@@ -31,7 +31,6 @@ class GoogleClient extends SocialClient implements ISocialClient {
     return GoogleClient.instance;
   }
   generateAuthUrl() {
-    console.log();
     const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
     const options = {
       redirect_uri: process.env.GOOGLE_REDIRECT_URL,

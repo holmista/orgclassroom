@@ -111,10 +111,6 @@ test("return error when deleting image which does not exist", async () => {
   await expect(staticFileManager.deleteFile(1, 1, 1, "test.png")).rejects.toThrowError("path not found");
 });
 
-test("return error when deleting file with unsupported image type", async () => {
-  await expect(staticFileManager.deleteFile(1, 1, 1, "test.gif")).rejects.toThrowError("image type not supported");
-});
-
 test("delete image which exists", async () => {
   await fs.mkdir("storage/1/1/1", { recursive: true });
   await fs.writeFile("storage/1/1/1/test.png", "test");

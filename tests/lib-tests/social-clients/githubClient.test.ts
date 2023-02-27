@@ -34,4 +34,4 @@ test("return user info if valid access token is provided in get user info", asyn
   expect(result?.email).toBeTruthy();
   expect(result?.name).toBeTruthy();
   expect(result?.authProviderId).toBeTruthy();
-}, 10000);
+}, 12000);

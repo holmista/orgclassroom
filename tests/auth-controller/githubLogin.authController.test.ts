@@ -37,7 +37,6 @@ test("login user if valid code is provided github", async () => {
   const res = await api.post("/auth/login/github").send({
     code
   });
-  console.log(res.body);
   expect(res.statusCode).toBe(200);
   expect(res.header["set-cookie"][0]).toMatch(/token/);
 }, 10000);
