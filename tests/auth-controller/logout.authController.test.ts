@@ -21,7 +21,6 @@ test("return error if invalid session token is provided when logging out", async
     .get("/auth/logout")
     .set("Cookie", [`token=${token}`])
     .send({});
-  console.log(res.body);
   expect(res.statusCode).toBe(500);
   expect(res.body).toHaveProperty("message");
   expect(res.body.message).toBe("invalid token");
