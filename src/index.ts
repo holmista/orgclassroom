@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 dotenv.config();
+import cors from "cors";
 
 import authRouter from "./routes/authRouter.js";
 import subjectRouter from "./routes/subjectRouter.js";
@@ -26,6 +27,7 @@ const app = express();
 setGoogleAuthURL();
 setGithubAuthURL();
 
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(upload.array("note-files"));
