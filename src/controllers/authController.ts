@@ -14,7 +14,8 @@ async function loginWithGoogle(req: express.Request, res: express.Response, clie
     const code = req.body.code as string;
     if (!code) return res.status(400).json({ message: "No code provided" });
     const sessionToken = await googleAuth.login(code);
-    res.status(200).cookie("token", sessionToken, SocialAuth.cookieOptions).end();
+    res.status(200).cookie("token", sessionToken, SocialAuth.cookieOptions).send();
+    res.send();
   } catch (err: any) {
     res.status(500).json({ message: err.message });
   }

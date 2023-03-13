@@ -27,7 +27,14 @@ const app = express();
 setGoogleAuthURL();
 setGithubAuthURL();
 
-app.use(cors({ origin: true, credentials: true }));
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization", "Origin", "X-Requested-With"]
+  })
+);
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(upload.array("note-files"));

@@ -34,7 +34,7 @@ model Subject {
   userId    Int
   startTime String @db.Char(4)
   endTime   String @db.Char(4)
-  title     String
+  title     String @unique
   Note      Note[]
 }
 
