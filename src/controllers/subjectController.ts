@@ -4,6 +4,7 @@ import { type CreateSubject } from "../middlewares/data-validation/subjects/sche
 import { type User, type Subject, type Note } from "@prisma/client";
 import StaticFileManager from "../../lib/StaticFileManager.js";
 import FileStorageManager from "../../lib/fileStorageManager.js";
+import "express-async-errors";
 
 const staticFileManager = StaticFileManager.getInstance();
 const fileStorageManager = FileStorageManager.getInstance();

@@ -44,8 +44,9 @@ app.use("/subjects", authenticate, subjectRouter);
 app.use("/notes", authenticate, noteRouter);
 app.use("/file", authenticate, fileRouter);
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.log(err);
+  if (err?.code && err.code === "P2002") return res.status(422).json({ message: "unique constraint violation" });
   return res.status(500).json({ message: "Something went wrong" });
 });
 
