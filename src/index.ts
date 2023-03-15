@@ -43,6 +43,9 @@ app.use("/auth", authRouter);
 app.use("/subjects", authenticate, subjectRouter);
 app.use("/notes", authenticate, noteRouter);
 app.use("/file", authenticate, fileRouter);
+app.get("/me", authenticate, (req, res) => {
+  res.json({ message: "authorized" });
+});
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.log(err);

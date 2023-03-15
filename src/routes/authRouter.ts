@@ -25,7 +25,7 @@ router.post("/login/github", (req, res) => {
   loginWithGithub(req, res, githubClient);
 });
 
-router.get("/logout", (req, res) => {
+router.post("/logout", (req, res) => {
   logout(req, res);
 });
 

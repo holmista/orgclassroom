@@ -37,7 +37,10 @@ async function logout(req: express.Request, res: express.Response) {
     const token = req.cookies.token;
     if (!token) return res.status(401).json({ message: "No token provided" });
     await SocialAuth.logout(token);
-    res.status(200).clearCookie("token", SocialAuth.cookieOptions).end();
+    res
+      .status(200)
+      .cookie("token", { ...SocialAuth.cookieOptions, maxAge: 0 } as express.CookieOptions)
+      .end();
   } catch (err: any) {
     res.status(500).json({ message: err.message });
   }
