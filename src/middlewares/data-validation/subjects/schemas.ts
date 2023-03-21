@@ -54,7 +54,7 @@ export const UpdateSubjectSchema = z
       return true;
     },
     {
-      message: "start time must be less than end time kokoko",
+      message: "start time must be less than end time",
       path: ["startTime"]
     }
   )
