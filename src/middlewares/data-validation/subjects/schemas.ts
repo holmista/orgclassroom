@@ -21,7 +21,10 @@ export const CreateSubjectSchema = z
       .refine((val) => isValidTime(val), {
         message: "end time must be a valid time"
       }),
-    title: z.string().max(100, { message: "title must be less than 100 characters long" })
+    title: z.string().max(100, { message: "title must be less than 100 characters long" }),
+    day: z.enum(["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"], {
+      required_error: "day is required"
+    })
   })
   .refine((data) => parseInt(data.startTime) < parseInt(data.endTime), {
     message: "start time must be less than end time",

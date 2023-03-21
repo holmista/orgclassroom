@@ -1,6 +1,5 @@
 import { type Request, type Response } from "express";
 import db from "../../lib/database.js";
-import { type CreateSubject } from "../middlewares/data-validation/subjects/schemas.js";
 import { type User, type Subject, type Note } from "@prisma/client";
 import StaticFileManager from "../../lib/StaticFileManager.js";
 import FileStorageManager from "../../lib/fileStorageManager.js";
@@ -41,13 +40,14 @@ export async function getSubject(req: Request, res: Response) {
 
 export async function createSubject(req: Request, res: Response) {
   const user = req.user as User;
-  const { startTime, endTime, title } = req.body as CreateSubject;
+  const { startTime, endTime, title, day } = req.body as Omit<Subject, "id" | "userId">;
   const subject = await db.subject.create({
     data: {
       userId: user.id,
       startTime,
       endTime,
-      title
+      title,
+      day
     }
   });
   await fileStorageManager.createSubjectFolder(user.id, subject.id);

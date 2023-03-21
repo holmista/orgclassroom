@@ -64,7 +64,7 @@ test("return error when creating subject with invalid end time", async () => {
   const res = await agent
     .post("/subjects")
     .set("Cookie", [`token=${session.sessionToken}`])
-    .send({ startTime: "1400", endTime: "invalid", title: "test" });
+    .send({ startTime: "1400", endTime: "invalid", title: "test", day: "monday" });
   expect(res.statusCode).toBe(422);
   expect(res.body).toHaveProperty("errors");
   expect(res.body.errors).toHaveProperty("endTime");
@@ -76,7 +76,7 @@ test("return error when creating subject with invalid title", async () => {
   const res = await agent
     .post("/subjects")
     .set("Cookie", [`token=${session.sessionToken}`])
-    .send({ startTime: "1400", endTime: "1500", title: "a".repeat(101) });
+    .send({ startTime: "1400", endTime: "1500", title: "a".repeat(101), day: "monday" });
   expect(res.statusCode).toBe(422);
   expect(res.body).toHaveProperty("errors");
   expect(res.body.errors).toHaveProperty("title");
@@ -88,7 +88,7 @@ test("return error when creating subject with start time greater than end time",
   const res = await agent
     .post("/subjects")
     .set("Cookie", [`token=${session.sessionToken}`])
-    .send({ startTime: "1500", endTime: "1400", title: "test" });
+    .send({ startTime: "1500", endTime: "1400", title: "test", day: "monday" });
   expect(res.statusCode).toBe(422);
   expect(res.body).toHaveProperty("errors");
   expect(res.body.errors).toHaveProperty("startTime");
@@ -100,14 +100,26 @@ test("return error when creating subject with duplicate title", async () => {
   await agent
     .post("/subjects")
     .set("Cookie", [`token=${session.sessionToken}`])
-    .send({ startTime: "1400", endTime: "1500", title: "test" });
+    .send({ startTime: "1400", endTime: "1500", title: "test", day: "monday" });
   const res = await agent
     .post("/subjects")
     .set("Cookie", [`token=${session.sessionToken}`])
-    .send({ startTime: "1400", endTime: "1500", title: "test" });
+    .send({ startTime: "1400", endTime: "1500", title: "test", day: "monday" });
   expect(res.statusCode).toBe(422);
   expect(res.body).toHaveProperty("message");
   expect(res.body.message).toBe("unique constraint violation");
+});
+
+test("return error when creating subject with invalid day", async () => {
+  const user = await createUser();
+  const session = await createSession(user.id);
+  const res = await agent
+    .post("/subjects")
+    .set("Cookie", [`token=${session.sessionToken}`])
+    .send({ startTime: "1400", endTime: "1500", title: "test", day: "invalid" });
+  expect(res.statusCode).toBe(422);
+  expect(res.body).toHaveProperty("errors");
+  expect(res.body.errors).toHaveProperty("day");
 });
 
 test("successfully create subject with valid body", async () => {
@@ -117,7 +129,7 @@ test("successfully create subject with valid body", async () => {
   const res = await agent
     .post("/subjects")
     .set("Cookie", [`token=${session.sessionToken}`])
-    .send({ startTime: "1400", endTime: "1500", title: "test" });
+    .send({ startTime: "1400", endTime: "1500", title: "test", day: "monday" });
   expect(res.statusCode).toBe(201);
   expect(res.body).toHaveProperty("subject");
   expect(res.body.subject).toHaveProperty("id");

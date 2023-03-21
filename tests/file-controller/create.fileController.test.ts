@@ -80,3 +80,8 @@ beforeEach(async () => {
   await clearDatabase();
   await emptyDir();
 });
+
+afterAll(async () => {
+  await clearDatabase();
+  await emptyDir();
+});

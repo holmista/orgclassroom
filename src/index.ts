@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
 
+import "express-async-errors";
 import authRouter from "./routes/authRouter.js";
 import subjectRouter from "./routes/subjectRouter.js";
 import noteRouter from "./routes/noteRouter.js";
