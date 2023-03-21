@@ -1,5 +1,5 @@
 import supertest from "supertest";
-import { test, expect, beforeEach } from "@jest/globals";
+import { test, expect, beforeEach, afterAll } from "@jest/globals";
 import app from "../../src/index.js";
 import clearDatabase from "../../src/helpers/clearDatabase.js";
 import createUser from "../../prisma/factories/createUserFactory.js";
@@ -94,6 +94,22 @@ test("return error when creating subject with start time greater than end time",
   expect(res.body.errors).toHaveProperty("startTime");
 });
 
+test("return error when creating subject with duplicate title", async () => {
+  const user = await createUser();
+  const session = await createSession(user.id);
+  await agent
+    .post("/subjects")
+    .set("Cookie", [`token=${session.sessionToken}`])
+    .send({ startTime: "1400", endTime: "1500", title: "test" });
+  const res = await agent
+    .post("/subjects")
+    .set("Cookie", [`token=${session.sessionToken}`])
+    .send({ startTime: "1400", endTime: "1500", title: "test" });
+  expect(res.statusCode).toBe(422);
+  expect(res.body).toHaveProperty("message");
+  expect(res.body.message).toBe("unique constraint violation");
+});
+
 test("successfully create subject with valid body", async () => {
   const user = await createUser();
   await fs.mkdir(`storage/${user.id}`);
@@ -118,6 +134,11 @@ test("successfully create subject with valid body", async () => {
 }, 10000);
 
 beforeEach(async () => {
+  await clearDatabase();
+  await emptyDir();
+});
+
+afterAll(async () => {
   await clearDatabase();
   await emptyDir();
 });

@@ -1,9 +1,10 @@
 import supertest from "supertest";
-import { test, expect, beforeEach } from "@jest/globals";
+import { test, expect, beforeEach, afterAll } from "@jest/globals";
 import app from "../../src/index.js";
 import getGithubCodePuppeteer from "../../src/helpers/getGithubcodePuppeteer.js";
 import clearDatabase from "../../src/helpers/clearDatabase.js";
 import emptyDir from "../../src/helpers/emptyDir.js";
+import { after } from "node:test";
 
 const api = supertest(app);
 const agent = supertest.agent(app);
@@ -42,6 +43,11 @@ test("login user if valid code is provided github", async () => {
 }, 10000);
 
 beforeEach(async () => {
+  await clearDatabase();
+  await emptyDir();
+});
+
+afterAll(async () => {
   await clearDatabase();
   await emptyDir();
 });

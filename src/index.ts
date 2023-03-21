@@ -43,7 +43,7 @@ app.use("/auth", authRouter);
 app.use("/subjects", authenticate, subjectRouter);
 app.use("/notes", authenticate, noteRouter);
 app.use("/file", authenticate, fileRouter);
-app.get("/me", authenticate, (req, res) => {
+app.get("/me", authenticate, (_, res) => {
   res.json({ message: "authorized" });
 });
 

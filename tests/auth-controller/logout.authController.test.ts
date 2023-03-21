@@ -9,7 +9,7 @@ const api = supertest(app);
 const agent = supertest.agent(app);
 
 test("return error on logout if user is not logged in", async () => {
-  const res = await api.get("/auth/logout");
+  const res = await api.post("/auth/logout");
   expect(res.statusCode).toBe(401);
   expect(res.body).toHaveProperty("message");
   expect(res.body.message).toBe("No token provided");
@@ -18,7 +18,7 @@ test("return error on logout if user is not logged in", async () => {
 test("return error if invalid session token is provided when logging out", async () => {
   const token = "ggyugyugyuv56fycf";
   const res = await agent
-    .get("/auth/logout")
+    .post("/auth/logout")
     .set("Cookie", [`token=${token}`])
     .send({});
   expect(res.statusCode).toBe(500);
@@ -38,7 +38,7 @@ test("logout user if valid session token is provided", async () => {
   });
   const token = session.sessionToken;
   const res = await agent
-    .get("/auth/logout")
+    .post("/auth/logout")
     .set("Cookie", [`token=${token}`])
     .send({});
   expect(res.statusCode).toBe(200);
