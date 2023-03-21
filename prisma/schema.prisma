@@ -10,13 +10,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// enum NoteType {
-//   TEXT
-//   IMAGE
-//   VIDEO
-//   AUDIO
-//   FILE
-// }
+enum Day{
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
+  saturday
+  sunday
+}
+
 
 model User {
   id             Int       @id @default(autoincrement())
@@ -35,6 +38,7 @@ model Subject {
   startTime String @db.Char(4)
   endTime   String @db.Char(4)
   title     String 
+  day       Day 
   Note      Note[]
   @@unique([userId, title])
 }
@@ -54,3 +58,5 @@ model Session {
   expiresAt    DateTime
   sessionToken String   @id
 }
+
+

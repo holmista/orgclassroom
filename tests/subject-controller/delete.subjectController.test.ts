@@ -1,7 +1,8 @@
 import supertest from "supertest";
-import { test, expect, beforeEach } from "@jest/globals";
+import { test, expect, beforeEach, afterAll } from "@jest/globals";
 import app from "../../src/index.js";
 import clearDatabase from "../../src/helpers/clearDatabase.js";
+import emptyDir from "../../src/helpers/emptyDir.js";
 import createUser from "../../prisma/factories/createUserFactory.js";
 import createSubject from "../../prisma/factories/createSubjectFactory.js";
 import createSession from "../../prisma/factories/createSessionFactory.js";
@@ -54,7 +55,7 @@ test("return error when deleting subject with id that does not belong to user", 
   const user1 = await createUser();
   const user2 = await createUser("gg@gmail.com", "gg", "google", "1234");
   const session = await createSession(user1.id);
-  const subject = await createSubject(user2.id, "1400", "1500", "test");
+  const subject = await createSubject(user2.id, "1400", "1500", "test", "monday");
   const res = await agent.delete(`/subjects/${subject.id}`).set("Cookie", [`token=${session.sessionToken}`]);
   expect(res.statusCode).toBe(403);
   expect(res.body).toHaveProperty("message");
@@ -65,7 +66,7 @@ test("return success when deleting subject with valid id", async () => {
   const user = await createUser();
   await fs.mkdir(`storage/${user.id}`);
   const session = await createSession(user.id);
-  const subject = await createSubject(user.id, "1400", "1500", "test");
+  const subject = await createSubject(user.id, "1400", "1500", "test", "monday");
   await fs.mkdir(`storage/${user.id}/${subject.id}`);
   const res = await agent.delete(`/subjects/${subject.id}`).set("Cookie", [`token=${session.sessionToken}`]);
   expect(res.statusCode).toBe(204);
@@ -75,4 +76,10 @@ test("return success when deleting subject with valid id", async () => {
 
 beforeEach(async () => {
   await clearDatabase();
+  await emptyDir();
+});
+
+afterAll(async () => {
+  await clearDatabase();
+  await emptyDir();
 });
