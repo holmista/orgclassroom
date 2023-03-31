@@ -49,6 +49,7 @@ model Note {
   subjectId Int
   title     String?
   content   String  @db.VarChar(16000)
+  createdAt DateTime @default(now())
 }
 
 model Session {

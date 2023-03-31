@@ -39,7 +39,14 @@ async function logout(req: express.Request, res: express.Response) {
     await SocialAuth.logout(token);
     res
       .status(200)
-      .cookie("token", { ...SocialAuth.cookieOptions, maxAge: 0 } as express.CookieOptions)
+      .cookie("token", "", {
+        domain: process.env.FRONT_TOP_LEVEL_DOMAIN,
+        path: "/",
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: 0
+      } as express.CookieOptions)
       .end();
   } catch (err: any) {
     res.status(500).json({ message: err.message });
